@@ -1,0 +1,14 @@
+node_modules
+dist
+server/public/*
+!server/public/favicon.ico
+server/logs
+
+.idea
+*.vscode
+.DS_Store
+.env
+
+*.log
+*.error
+package-lock.json

@@ -1,0 +1,16 @@
+{
+  "presets": [
+    "@babel/preset-flow",
+    ["@babel/preset-env"],
+		"@babel/preset-react",
+		"@vue/babel-preset-jsx"
+  ],
+  "plugins": [
+		["import", { "libraryName": "ant-design-vue", "libraryDirectory": "es", "style": "css" }],
+    "babel-plugin-transform-eval",
+		["@babel/plugin-proposal-private-methods", { "loose": true }],
+    ["@babel/plugin-proposal-decorators", { "legacy": true }],
+    ["@babel/plugin-proposal-class-properties", { "loose": true }],
+		"@babel/plugin-transform-runtime"
+  ]
+}
