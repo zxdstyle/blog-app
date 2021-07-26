@@ -31,12 +31,12 @@ export default function createRequest({
 				return response
 			}
 
-			if (!data.error || !data.error?.length) {
+			if (!data.error) {
 				return data
 			}
 
-			const error = new Error(data.error)
-			error.code = data.status
+			const error = new Error(data.errorMsg.message)
+			error.code = data.code
 			error.response = response
 			throw error
 		},

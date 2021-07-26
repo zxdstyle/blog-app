@@ -1,0 +1,30 @@
+extends /layout/main.pug
+
+
+block vars
+	- var title = "后台登录"
+	- var showNav = false
+	- var showFooter = false
+
+
+block styles
+
+
+block content
+	.admin-form-box
+		.login-wrap.signin-wrap
+			h1 登录
+			.form-wrap
+				.form-item
+					.item-label.required 邮箱
+					input(type="text" placeholder="enter email...")#email
+				.form-item
+					.item-label.required 密码
+					input(type="password" placeholder="enter password...")#pwd
+				.form-item.code-item
+					.item-label.required 验证码
+					.code-wrap
+						input(type="text" placeholder="enter code...")#code
+						.code-img 验证码
+				.form-item.btn-item
+					button.btn.login-btn 登录

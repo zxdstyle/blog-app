@@ -1,0 +1,193 @@
+/**
+ *	admin login
+ *
+ */
+
+@import "@style/lib/_function";
+@import "@style/lib/_mixin";
+@import "@style/lib/_variable";
+@import "@style/init";
+
+$bgColor: #f2eff8;
+
+$windowMinW: 670;
+$windowMinH: 410;
+
+body {
+	background-color: $bgColor;
+	min-width: rem($windowMinW);
+	height: 100vh;
+	min-height: rem($windowMinH);
+	position: relative;
+	font-family: "dk" !important;
+
+	.admin-form-box {
+		width: rem($windowMinW);
+		height: rem($windowMinH);
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		border-radius: 5px;
+		background-color: #fff;
+		box-shadow: 0 0 15px rgba(224, 224, 224, 0.3);
+		user-select: none;
+		$bgWidth: 340;
+		@include bgImg("@assets/img/admin_login_bg.png", rem($bgWidth), 100%, left);
+		box-sizing: border-box;
+		padding-left: rem($bgWidth);
+		overflow: hidden;
+
+		.login-wrap {
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			padding: rem(30) rem(40) rem(0);
+			overflow: hidden;
+
+			h1 {
+				margin: 0 0 rem(20);
+				font-size: rem(25);
+				color: rgb(83, 83, 83);
+			}
+
+			.form-wrap {
+				width: 100%;
+				height: 100%;
+				box-sizing: border-box;
+				overflow: hidden;
+
+				&.signout-wrap {
+					display: none;
+				}
+
+				.form-item {
+					width: 100%;
+					margin-bottom: rem(10);
+					border-bottom: 1px solid #f0f0f0;
+
+					.item-label {
+						width: 100%;
+						font-size: rem(14);
+						font-weight: 600;
+						color: #babec2;
+						font-family: "dk";
+						letter-spacing: 0.5px;
+						position: relative;
+						display: inline;
+
+						&.required {
+							&::after {
+								content: "*";
+								display: inline-block;
+								height: 100%;
+								position: absolute;
+								left: 100%;
+								font-size: rem(12);
+								color: #e9232c;
+							}
+						}
+					}
+
+					input {
+						border: none;
+						box-sizing: border-box;
+						padding: rem(6) rem(0);
+						font-size: rem(14);
+						font-family: "dk";
+						width: 100%;
+
+						&:focus {
+							outline: none;
+						}
+
+						&::placeholder {
+							color: rgb(214, 214, 214);
+						}
+					}
+
+					.code-wrap {
+						@include flex;
+
+						input {
+							flex: 1;
+							padding-right: rem(10);
+							box-sizing: border-box;
+						}
+
+						.code-img {
+							width: rem(90);
+							height: rem(33);
+							cursor: pointer;
+
+							svg {
+								width: 100%;
+								height: 100%;
+								cursor: pointer;
+							}
+						}
+					}
+
+					&.code-item {
+						margin-bottom: 0;
+					}
+
+					&.btn-item {
+						text-align: center;
+						border-bottom: none;
+
+						.btn {
+							width: 80%;
+							background: linear-gradient(to right, #FEB000, #FF8A00);
+							color: #fff;
+							border: none;
+							height: rem(35);
+							font-size: rem(14);
+							cursor: pointer;
+							border-radius: 20px;
+							text-indent: .5rem;
+							letter-spacing: 1px;
+							font-weight: 600;
+							font-family: "dk";
+							margin-top: rem(10);
+
+							&:focus {
+								outline: none;
+							}
+						}
+					}
+
+					&.notice-item {
+						border-bottom: none;
+						display: flex;
+
+						div {
+							flex: 1;
+
+							span {
+								color: $themeColor;
+								font-size: rem(12);
+							}
+
+							a {
+								text-decoration: none;
+								font-size: rem(12);
+								color: $linkColor;
+
+								&.forgot{
+									color: rgb(99, 98, 98);
+								}
+							}
+
+							&:last-of-type{
+								text-align: right;
+							}
+						}
+
+					}
+
+				}
+			}
+		}
+	}
+}

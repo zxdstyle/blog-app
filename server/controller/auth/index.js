@@ -37,63 +37,67 @@ module.exports = {
 	},
 	// user login
 	userLogin: async (ctx, next) => {
-		const { account, pwd, code } = ctx.request.body
+		const { email, pwd, code } = ctx.request.body
 		const codeCookie = ctx.cookies.get(ctx.config.AUTH_CODE_COOKIE_NAME)
 
 		if (!code) {
 			ctx.body = {
-				status: 401,
+				code: 200,
 				error: "验证码不能为空",
+				errorMsg: {
+					message: "验证码不能为空",
+				}
 			}
 			return
 		}
-		if (!account || !pwd) {
+		if (!email || !pwd) {
 			ctx.body = {
-				status: 401,
+				code: 200,
 				error: "账号或密码不能为空",
+				errorMsg: {
+					message: "账号或密码不能为空",
+				}
 			}
 			return
 		}
-		if (MD5(code.toLowerCase()).toString() != codeCookie) {
+		if (MD5(code.toLowerCase()).toString() !== codeCookie) {
 			ctx.body = {
-				status: 401,
+				code: 200,
 				error: "验证码错误",
+				errorMsg: {
+					message: "验证码错误",
+				}
 			}
 			return
 		}
 
 		// query sql
-		const { realAccount, realPwd } = await authService.userLogin(ctx, next)
-		if (account == realAccount && pwd == realPwd) {
-			ctx.cookies.set(ctx.config.AUTH_CODE_COOKIE_NAME, "", { signed: false, maxAge: 0 })
-			const payload = {
-				account,
-				sex: 1,
-				phone: "18722229999",
-				priority: 1,
-				position: "programmer",
-				date: +new Date,
-			}
-			const token = await jwt.sign(payload, ctx.config.SECRET, { expiresIn: 10 * 60 * 1000 })
-			ctx.cookies.set(ctx.config.USER_TOKEN_COOKIE_NAME, token, {
-				domain: ctx.config.DOMAIN,
-				path: "/",
-				maxAge: 10 * 60 * 1000,
-				overwrite: false,
-				httpOnly: true,
-			})
-			ctx.body = {
-				status: 200,
-				msg: "登录成功",
-				dataList: {
-					token,
+		try {
+			const query = await authService.userLogin(ctx, next)
+			if (query.success) {
+				const payload = query.model
+				ctx.cookies.set(ctx.config.AUTH_CODE_COOKIE_NAME, "", { signed: false, maxAge: 0 })
+				const token = await jwt.sign(payload, ctx.config.SECRET, { expiresIn: 10 * 60 * 1000 })
+				ctx.cookies.set(ctx.config.USER_TOKEN_COOKIE_NAME, token, {
+					domain: ctx.config.DOMAIN,
+					path: "/",
+					maxAge: 10 * 60 * 1000,
+					overwrite: false,
+					httpOnly: true,
+				})
+				ctx.body = {
+					...query,
+					message: "登录成功!",
+				}
+			} else {
+				ctx.body = {
+					...query,
 				}
 			}
-			return
-		} else {
+		} catch (err) {
+			console.log(err)
 			ctx.body = {
-				status: 401,
-				error: "账号或密码错误",
+				...err,
 			}
 		}
 	},

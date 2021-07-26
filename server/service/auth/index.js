@@ -11,14 +11,46 @@ const MD5 = require("crypto-js/md5")
 module.exports = {
 	// user login
 	userLogin: async (ctx, next) => {
-		// query sql
-		if(ctx.config.USE_DB) {  // 如果使用了数据库
-			const { results } = await ctx.db("select * from user")
-			console.log(results[0].account)
+		try {
+			let queryMsg = {}
+			const { email, pwd } = ctx.request.body
+			const { results } = await ctx.db(`select * from user where email='${email}'`)
+			if (results && results.length) {
+				const model = results[0];
+				if (model.password === pwd) {
+					delete model.password
+					queryMsg = {
+						code: 200,
+						success: true,
+						model: Object.assign({}, model),
+					}
+				} else {
+					queryMsg = {
+						code: 200,
+						error: "账号或密码错误",
+						errorMsg: {
+							message: "账号或密码错误",
+						}
+					}
+				}
+			} else {
+				queryMsg = {
+					code: 200,
+					error: "账号或密码错误",
+					errorMsg: {
+						message: "账号或密码错误",
+					}
+				}
+			}
+			return queryMsg
+		} catch (err) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: err.message,
+				},
+				error: err,
+			}
 		}
-
-		const realPwd = MD5("123456").toString(),
-			realAccount = "admin"
-		return { realAccount, realPwd }
 	},
 }

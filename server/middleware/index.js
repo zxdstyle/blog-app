@@ -32,7 +32,7 @@ module.exports = async (app, config) => {
 	})
 
 	app.use(async (ctx, next) => {
-		ctx.config.USE_DB ? (ctx.db = db) : null
+		ctx.db = db
 		await next()
 	})
 

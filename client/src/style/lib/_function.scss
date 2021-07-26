@@ -1,0 +1,11 @@
+// function
+
+
+@function rem($px){
+	@return $px / $rootSize * 1rem;
+}
+
+
+@function lineH($value: inherit){
+	@return $value;
+}

@@ -1,0 +1,103 @@
+@import "@style/lib/_variable";
+@import "@style/lib/_function";
+@import "@style/lib/_mixin";
+
+$noticeW: 350;
+
+.pea-notice {
+	width: rem($noticeW);
+	background-color: #fff;
+	position: fixed;
+	top: 50px;
+	left: 50%;
+	border-radius: 5px;
+	margin-left: rem(-$noticeW / 2);
+	box-sizing: border-box;
+	padding: 10px;
+	box-shadow: 0 2px 12px 0 #ddd;
+	transition: all 200ms ease-in;
+	user-select: none;
+	display: none;
+
+	.notice-content {
+		position: relative;
+		box-sizing: border-box;
+		padding-left: rem(30);
+		min-height: rem(22);
+
+		.type-icon {
+			width: 20px;
+			height: 20px;
+			position: absolute;
+			left: 0;
+			top: 0;
+
+			&.type-info{
+				@include bgImg("@assets/img/info_icon.svg");
+			}
+			&.type-error{
+				@include bgImg("@assets/img/error_icon.svg");
+			}
+			&.type-warn{
+				@include bgImg("@assets/img/warn_icon.svg");
+			}
+			&.type-success{
+				@include bgImg("@assets/img/success_icon.svg");
+			}
+		}
+
+		.notice {
+			font-size: rem(14);
+		}
+	}
+
+	.notice-footer {
+		text-align: right;
+		padding-right: 10px;
+		padding-top: rem(10);
+		box-sizing: border-box;
+
+		button {
+			border: none;
+			box-sizing: border-box;
+			padding: rem(3) rem(10);
+			min-width: rem(60);
+			font-size: rem(12);
+			color: #fff;
+			cursor: pointer;
+			transition: all 200ms ease-in;
+
+			&.cancle-btn {
+				border: 1px solid #dcdfe6;
+				color: #606266;
+				background-color: #fff;
+
+				&:hover {
+					color: #409eff;
+					border-color: #c6e2ff;
+					background-color: #ecf5ff;
+				}
+			}
+
+			&.ok-btn {
+				color: #fff;
+				background-color: #409eff;
+				border-color: #409eff;
+
+				&:hover {
+					background: #66b1ff;
+					border-color: #66b1ff;
+					color: #fff;
+				}
+			}
+
+			&:focus {
+				outline: none;
+			}
+
+			&:first-of-type {
+				margin-right: rem(15);
+			}
+		}
+	}
+}

@@ -73,7 +73,6 @@ export const Editor = {
 	...commonProps,
 
 	render() {
-		console.log(this.change)
 		return (
 			<ByteEditor
 				value={this.value}
