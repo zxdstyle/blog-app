@@ -1,38 +1,26 @@
 <template>
-	<div>
-		<a-button>ss</a-button>
-		<Viewer
-			:value="value"
-		/>
-		<Editor
-			:value="value"
-			@change="handleChange"
-		/>
+	<div class="root-dom">
+		<router-view />
 	</div>
 </template>
 
 <script>
-import { Viewer, Editor } from "@pages/root/components/ByteMd.jsx";
-
 export default {
 	name: "App",
 	components: {
-		Editor,
-		Viewer,
 	},
 	data() {
 		return {
-			value: "## 我是标题",
 		}
 	},
 	methods: {
-		handleChange(v) {
-			this.value = v;
-		},
 	},
 }
 </script>
 
-<style scoped>
-
+<style lang="scss" scoped>
+.root-dom {
+	height: 100vh;
+	overflow-y: auto;
+}
 </style>

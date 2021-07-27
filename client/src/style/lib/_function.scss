@@ -1,8 +1,8 @@
 // function
-
+@import "_variable";
 
 @function rem($px){
-	@return $px / $rootSize * 1rem;
+	@return $px / $root * 1rem;
 }
 
 

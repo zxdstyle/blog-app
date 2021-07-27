@@ -19,7 +19,6 @@ body {
 	height: 100vh;
 	min-height: rem($windowMinH);
 	position: relative;
-	font-family: "dk" !important;
 
 	.admin-form-box {
 		width: rem($windowMinW);
@@ -71,7 +70,6 @@ body {
 						font-size: rem(14);
 						font-weight: 600;
 						color: #babec2;
-						font-family: "dk";
 						letter-spacing: 0.5px;
 						position: relative;
 						display: inline;
@@ -94,7 +92,6 @@ body {
 						box-sizing: border-box;
 						padding: rem(6) rem(0);
 						font-size: rem(14);
-						font-family: "dk";
 						width: 100%;
 
 						&:focus {
@@ -148,7 +145,6 @@ body {
 							text-indent: .5rem;
 							letter-spacing: 1px;
 							font-weight: 600;
-							font-family: "dk";
 							margin-top: rem(10);
 
 							&:focus {

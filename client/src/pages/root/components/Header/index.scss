@@ -1,0 +1,89 @@
+/**
+ *	Header.jsx css
+ */
+
+@import "@style/lib/_function";
+@import "@style/lib/_variable";
+
+$logo-position-x: 150;
+
+.blog-header {
+	height: rem($headerH);
+	background-color: #fff;
+	box-shadow: 0 2px 6px #EEEEEE;
+	background-image: url("@assets/img/blog-logo.png");
+	background-size: auto 100%;
+	background-repeat: no-repeat;
+	background-position-x: rem($logo-position-x);
+	padding: 0 rem($logo-position-x);
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: fixed;
+	top: 0;
+	left: 0;
+	right: 0;
+}
+
+.header-menus {
+	margin-left: 150px;
+	height: rem($headerH);
+	user-select: none;
+	.menu-item {
+		float: left;
+		margin: 0 10px;
+		line-height: rem($headerH);
+		min-width: rem(50);
+		text-align: center;
+		color: $themeColor;
+		position: relative;
+
+		&.active {
+			a {
+				color: #546fe2;
+			}
+			&::after {
+				content: "";
+				display: block;
+				position: absolute;
+				bottom: 0;
+				height: 2px;
+				background: #177ee2;
+				width: 100%;
+				animation: activeMenu 500ms;
+
+				@keyframes activeMenu {
+					0% {
+						transform: rotate(-20deg);
+					}
+					25% {
+						transform: rotate(0deg);
+					}
+					50% {
+						transform: rotate(20deg);
+					}
+					75% {
+						transform: rotate(0deg);
+					}
+				}
+			}
+		}
+
+		a {
+			color: $themeColor;
+		}
+	}
+}
+
+.header-action {
+	color: $themeColor;
+	.logo-link {
+		color: $themeColor;
+		margin-left: 10px;
+	}
+}
+
+
+.ant-dropdown-menu {
+	width: rem(100);
+}
