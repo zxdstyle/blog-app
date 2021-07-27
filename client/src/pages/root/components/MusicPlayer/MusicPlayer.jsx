@@ -130,6 +130,11 @@ const musicList = [
 	},
 ];
 
+const MUSICPLAYER_SIZE_STATUS = {
+	LG: "large",
+	SM: "small",
+}
+
 const MusicPlayer = {
 	data() {
 		return {
@@ -137,6 +142,7 @@ const MusicPlayer = {
 			currentMusic: {},
 			playing: false,
 			musicIndex: -1,
+			musicPlayerStatus: MUSICPLAYER_SIZE_STATUS.LG,
 		}
 	},
 
@@ -187,15 +193,34 @@ const MusicPlayer = {
 		},
 		errorMusic(e) {
 			if (e) {
-				this.$message.error("歌曲错误，将为您播放下一首")
-				this.nextMusic()
+				this.currentMusic.post = loadFaildImg
+				this.$message.error("歌曲错误，将为您播放下一首", 2)
+					.then(() => {
+						this.nextMusic()
+					})
 			}
 		},
+		toggleMusicPlayer(type) {
+			if (type === MUSICPLAYER_SIZE_STATUS.SM) {
+				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.SM
+			}
+			if (type === MUSICPLAYER_SIZE_STATUS.LG) {
+				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.LG
+			}
+		},
+		expandMusicPlayer() {
+			if (this.musicPlayerStatus === MUSICPLAYER_SIZE_STATUS.SM) {
+				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.LG
+			}
+		}
 	},
 
 	render() {
 		return (
-			<div class={"blog-musicplayer"}>
+			<div class={`
+				blog-musicplayer
+				${this.musicPlayerStatus === MUSICPLAYER_SIZE_STATUS.SM ? 'musicplayer-sm' : ''}
+			`}>
 				<a-spin
 					class={`${this.spinning ? 'music-loading' : ''}`}
 					spinning={this.spinning}
@@ -210,7 +235,10 @@ const MusicPlayer = {
 					onCanPlay={this.loadMusic}
 					onError={this.errorMusic}
 				/>
-				<div class="music-cover">
+				<div
+					class="music-cover"
+					onClick={() => this.expandMusicPlayer()}
+				>
 					<img
 						src={this.currentMusic.post}
 					/>
@@ -220,12 +248,15 @@ const MusicPlayer = {
 						{this.currentMusic.title}
 					</div>
 
-					<svg aria-hidden="true" class="music-icon close" data-v-d060bb14="">
-						<use xlinkHref="#icon-close" data-v-d060bb14="">
-							<svg id="icon-close" viewBox="0 0 1024 1024" data-v-d060bb14="">
+					<svg
+						aria-hidden="true"
+						class="music-icon close"
+						onClick={() => this.toggleMusicPlayer(MUSICPLAYER_SIZE_STATUS.SM)}
+					>
+						<use xlinkHref="#icon-close">
+							<svg id="icon-close" viewBox="0 0 1024 1024">
 								<path
 									d="M514.496 738.944C389.392 738.944 288 637.536 288 512.448c0-125.104 101.392-226.512 226.496-226.512 125.088 0 226.496 101.408 226.496 226.512C740.992 637.536 639.6 738.944 514.496 738.944zM620.72 434.624c6.16-6.16 4.336-18-4.064-26.4l-0.96-0.944c-8.4-8.4-20.224-10.24-26.384-4.064l-75.344 75.36-80.816-80.832c-6.256-6.256-18.24-4.4-26.752 4.128l-0.96 0.96c-8.528 8.512-10.352 20.496-4.112 26.72l80.816 80.832-78.864 78.848c-6.176 6.192-4.352 17.984 4.064 26.4l0.944 0.944c8.4 8.4 20.224 10.256 26.384 4.064l78.88-78.88 76.32 76.336c6.256 6.24 18.224 4.416 26.736-4.112l0.976-0.976c8.528-8.496 10.368-20.48 4.112-26.736l-76.32-76.336L620.72 434.624z"
-									data-v-d060bb14=""
 								/>
 							</svg>
 						</use>
@@ -238,8 +269,8 @@ const MusicPlayer = {
 							onClick={this.prevMusic}
 						>
 							<use xlinkHref="#icon-dingbuzuoqiehuan">
-								<svg id="icon-dingbuzuoqiehuan" viewBox="0 0 1024 1024" data-v-d060bb14="">
-									<path d="M0 512L558.545455 0v1024z m465.454545 0L1024 0v1024z" data-v-d060bb14=""/>
+								<svg id="icon-dingbuzuoqiehuan" viewBox="0 0 1024 1024">
+									<path d="M0 512L558.545455 0v1024z m465.454545 0L1024 0v1024z"/>
 								</svg>
 							</use>
 						</svg>
