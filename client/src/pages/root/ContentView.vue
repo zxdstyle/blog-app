@@ -3,6 +3,8 @@
 		<Header />
 
 		<router-view />
+
+		<a-back-top />
 	</div>
 </template>
 
@@ -22,6 +24,6 @@ export default {
 @import "@/style/lib/_variable";
 @import "@/style/lib/_function";
 .content-view {
-	padding-top: rem($headerH);
+
 }
 </style>

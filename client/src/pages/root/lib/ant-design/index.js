@@ -7,6 +7,7 @@ import {
 	message,
 	notification,
 	Modal,
+	BackTop,
 } from "ant-design-vue"
 
 const components = [
@@ -18,6 +19,7 @@ const components = [
 	message,
 	notification,
 	Modal,
+	BackTop,
 ]
 
 const install = function (Vue) {

@@ -19,8 +19,9 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+@import "@/style/lib/_variable";
+@import "@/style/lib/_function";
 .root-dom {
-	height: 100vh;
-	overflow-y: auto;
+	padding-top: rem($headerH);
 }
 </style>
