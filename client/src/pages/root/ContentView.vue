@@ -4,18 +4,22 @@
 
 		<router-view />
 
+		<MusicPlayer />
+
 		<a-back-top />
 	</div>
 </template>
 
 <script>
 import Header from "@pages/root/components/Header/Header";
+import MusicPlayer from "@pages/root/components/MusicPlayer/MusicPlayer";
 
 export default {
 	name: "ContentView",
 
 	components: {
 		Header,
+		MusicPlayer,
 	},
 }
 </script>

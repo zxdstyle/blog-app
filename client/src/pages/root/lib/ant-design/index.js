@@ -8,6 +8,7 @@ import {
 	notification,
 	Modal,
 	BackTop,
+	Spin,
 } from "ant-design-vue"
 
 const components = [
@@ -20,6 +21,7 @@ const components = [
 	notification,
 	Modal,
 	BackTop,
+	Spin,
 ]
 
 const install = function (Vue) {
