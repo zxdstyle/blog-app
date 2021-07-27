@@ -33,7 +33,6 @@ try {
 ${chalk.gray("[1]") + chalk.hex("#007BFF").bold("Server is running at:")}
 ${chalk.hex("#007BFF").bold("- Local:")}   ${chalk.underline("http://localhost:" + config.SERVER_PORT)}
 ${chalk.hex("#007BFF").bold("- Network:")} ${chalk.underline("http://" + config.DOMAIN + ":" + config.SERVER_PORT)}\n`)
-	config.NODE_ENV ? openBrowser(`http://${config.DOMAIN}:${config.SERVER_PORT}`) : null
 } catch (error) {
 	throw Error("server throw error: " + error)
 }

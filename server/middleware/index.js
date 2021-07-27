@@ -16,6 +16,7 @@ const { logger, accessLogger } = require("./log")
 const verifyAuth = require("./auth")
 const db = require("./mysql")
 const Mock = require("mockjs").mock
+const isDev = process.env.NODE_ENV === 'development'
 
 const router = require("../router/route")
 
@@ -46,7 +47,7 @@ module.exports = async (app, config) => {
 	app.use(bodyParser())
 
 	app.use(cors({
-		origin: ctx => `http://${ctx.config.DOMAIN}:${ctx.config.WEB_PORT}`,
+		origin: ctx => isDev ? `http://${ctx.config.DOMAIN}:${ctx.config.WEB_PORT}` : `http://${ctx.config.DOMAIN}`,
 		maxAge: 5,
 		credentials: true,
 		allowMethods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
