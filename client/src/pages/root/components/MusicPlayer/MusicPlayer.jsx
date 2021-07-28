@@ -4,6 +4,7 @@
  */
 
 import "./index.scss"
+import { debounce } from "@/util/generic/fn-core"
 
 const loadFaildImg = "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9rguy3btj306p05tjr6.jpg"
 
@@ -138,11 +139,20 @@ const MUSICPLAYER_SIZE_STATUS = {
 const MusicPlayer = {
 	data() {
 		return {
+			searchKey: "",
+			searchMusicList: [],
+			showSearch: false,
 			spinning: false,
 			currentMusic: {},
 			playing: false,
 			musicIndex: -1,
 			musicPlayerStatus: MUSICPLAYER_SIZE_STATUS.LG,
+		}
+	},
+
+	computed: {
+		activeMusic() {
+			return this.currentMusic
 		}
 	},
 
@@ -152,6 +162,7 @@ const MusicPlayer = {
 	},
 
 	methods: {
+		// 播放 / 暂停
 		togglePlay() {
 			if (this.playing) {
 				this.$refs.musicPlayer.pause()
@@ -160,6 +171,7 @@ const MusicPlayer = {
 			}
 			this.playing = !this.playing
 		},
+		// 下一首
 		nextMusic() {
 			this.spinning = true
 			if (this.musicIndex < musicList.length - 1) {
@@ -170,6 +182,7 @@ const MusicPlayer = {
 				this.currentMusic = musicList[this.musicIndex]
 			}
 		},
+		// 上一首
 		prevMusic() {
 			this.spinning = true
 			if (this.musicIndex < 1) {
@@ -180,9 +193,11 @@ const MusicPlayer = {
 				this.currentMusic = musicList[this.musicIndex]
 			}
 		},
+		// 加载音乐
 		loadMusic() {
 			this.spinning = false
 		},
+		// 加载音乐
 		fetchMusic() {
 			this.spinning = false
 			this.$nextTick(() => {
@@ -191,6 +206,7 @@ const MusicPlayer = {
 				}
 			})
 		},
+		// 音乐加载错误
 		errorMusic(e) {
 			if (e) {
 				this.currentMusic.post = loadFaildImg
@@ -200,19 +216,40 @@ const MusicPlayer = {
 					})
 			}
 		},
+		// 改变播放器尺寸
 		toggleMusicPlayer(type) {
-			if (type === MUSICPLAYER_SIZE_STATUS.SM) {
-				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.SM
-			}
-			if (type === MUSICPLAYER_SIZE_STATUS.LG) {
-				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.LG
+			if (this.musicPlayerStatus === type) return
+			this.musicPlayerStatus = type
+			this.showSearch = false
+		},
+		handleSearch(searchKey) {
+			if (!searchKey) {
+				this.searchMusicList = [];
+			} else {
+				const clonedMusics = [...musicList]
+				this.searchMusicList = clonedMusics.filter((music) => {
+					return music.title.toLowerCase().includes(searchKey.toString().toLowerCase())
+				})
 			}
 		},
-		expandMusicPlayer() {
-			if (this.musicPlayerStatus === MUSICPLAYER_SIZE_STATUS.SM) {
-				this.musicPlayerStatus = MUSICPLAYER_SIZE_STATUS.LG
+		jumpPlay(music) {
+			if (this.currentMusic === music) return
+			this.currentMusic = music
+			const index = musicList.map((item) => item.title.toLowerCase()).indexOf(music.title.toLowerCase())
+			this.musicIndex = index
+			this.$nextTick(() => {
+				this.$refs.musicPlayer.play()
+				this.playing = true
+			})
+		},
+		toggleShowSearch() {
+			this.showSearch = !this.showSearch
+			if (this.showSearch) {
+				this.$refs.searchInput.focus()
+			} else {
+				this.$refs.searchInput.blur()
 			}
-		}
+		},
 	},
 
 	render() {
@@ -220,6 +257,7 @@ const MusicPlayer = {
 			<div class={`
 				blog-musicplayer
 				${this.musicPlayerStatus === MUSICPLAYER_SIZE_STATUS.SM ? 'musicplayer-sm' : ''}
+				${this.playing ? 'playing' : ''}
 			`}>
 				<a-spin
 					class={`${this.spinning ? 'music-loading' : ''}`}
@@ -237,7 +275,7 @@ const MusicPlayer = {
 				/>
 				<div
 					class="music-cover"
-					onClick={() => this.expandMusicPlayer()}
+					onClick={() => this.toggleMusicPlayer(MUSICPLAYER_SIZE_STATUS.LG)}
 				>
 					<img
 						src={this.currentMusic.post}
@@ -314,7 +352,11 @@ const MusicPlayer = {
 								</svg>
 							</use>
 						</svg>
-						<svg aria-hidden="true" class="music-icon icon">
+						<svg
+							aria-hidden="true"
+							class="music-icon icon"
+							onClick={this.toggleShowSearch}
+						>
 							<use xlinkHref="#icon-chakangengduo">
 								<svg id="icon-chakangengduo" viewBox="0 0 1024 1024">
 									<path
@@ -324,6 +366,46 @@ const MusicPlayer = {
 							</use>
 						</svg>
 					</div>
+				</div>
+
+				{/*歌曲列表*/}
+				<div
+					class={`music-list ${this.showSearch ? 'show' : 'hidden'}`}
+				>
+					<div class="search-wrap">
+						<svg
+							aria-hidden="true"
+							class="search-icon"
+						>
+							<use xlinkHref="#icon-search">
+								<svg id="icon-search" viewBox="0 0 1024 1024">
+									<path d="M937.024 825.472l-176.512-176.576c-2.624-2.624-5.568-4.608-8.32-6.784 38.208-58.688 60.544-128.512 60.544-203.776 0-206.784-167.552-374.4-374.4-374.4C231.616 63.936 64 231.552 64 438.336c0 206.784 167.68 374.4 374.4 374.4 75.264 0 145.216-22.4 203.904-60.608 2.176 2.816 4.096 5.696 6.72 8.256l176.512 176.576C840.96 952.32 861.056 960 881.216 960c20.16 0 40.32-7.68 55.744-23.04C967.68 906.176 967.68 856.256 937.024 825.472M438.336 694.464c-141.184 0-256.128-114.944-256.128-256.128 0-141.184 114.944-256.128 256.128-256.128 141.184 0 256.128 114.944 256.128 256.128C694.464 579.52 579.52 694.464 438.336 694.464"/>
+								</svg>
+							</use>
+						</svg>
+						<input
+							v-model={this.searchKey}
+							ref={"searchInput"}
+							type="text"
+							class="search-input"
+							placeholder="搜索歌曲..."
+							onInput={(e) => debounce(this.handleSearch, 800)(this.searchKey)}
+						/>
+					</div>
+					<ul class="list-content">
+						{
+							this.searchMusicList.map((music, index) => {
+								return <li
+									class={`${this.activeMusic.title === music.title ? 'active' : ''}`}
+									onClick={() => this.jumpPlay(music)}
+								>
+									<span>{index + 1}.</span>
+									<span class={"music-title"}>{music.title}</span>
+									<span class={"music-author"}> —— {music.author}</span>
+								</li>
+							})
+						}
+					</ul>
 				</div>
 			</div>
 		)

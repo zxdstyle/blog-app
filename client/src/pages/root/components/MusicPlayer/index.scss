@@ -14,26 +14,34 @@ $musicPlayerSML: $musicPlayerH;
 	bottom: rem(50);
 	width: rem($musicPlayerL);
 	height: rem($musicPlayerH);
-	box-shadow: 0 15px 30px 0 rgba(0, 0, 0, .15);
+	box-shadow: 0 rem(15) rem(30) 0 rgba(0, 0, 0, .15);
 	transition: width 200ms ease;
 	display: flex;
 
 	&.musicplayer-sm{
 		width: rem($musicPlayerH);
+
+		&.playing {
+			.music-cover {
+				img {
+					animation: spinPoster 20s infinite linear;
+					@keyframes spinPoster {
+						from {
+							transform: rotate(0);
+						}
+						to {
+							transform: rotate(360deg);
+						}
+					}
+				}
+			}
+		}
+
 		.music-cover {
 			padding: 5px;
 			img {
 				border-radius: 50%;
-				animation: spinPoster 20s infinite linear;
-
-				@keyframes spinPoster {
-					from {
-						transform: rotate(0);
-					}
-					to {
-						transform: rotate(360deg);
-					}
-				}
+				box-shadow: 0 0 rem(10) #ddd;
 			}
 		}
 		.music-content {
@@ -46,7 +54,7 @@ $musicPlayerSML: $musicPlayerH;
 		z-index: 1;
 		position: absolute;
 		left: rem($musicPlayerH);
-		width: 180px;
+		width: rem(180);
 		height: 100%;
 		-webkit-box-align: start;
 		display: flex;
@@ -56,10 +64,11 @@ $musicPlayerSML: $musicPlayerH;
 		background-color: rgba(255, 255, 255, .7);
 		padding: rem(15) 0 rem(15) rem(20);
 		box-sizing: border-box;
+		user-select: none;
 
 		.music-title {
 			width: 80%;
-			font-size: 13px;
+			font-size: rem(13);
 			font-weight: 600;
 			color: #bba477;
 			white-space: nowrap;
@@ -70,27 +79,144 @@ $musicPlayerSML: $musicPlayerH;
 
 		.controls {
 			.music-icon {
-				font-size: 20px;
+				font-size: rem(20);
 				color: #c4b597;
-				margin: 0 10px;
+				margin: 0 rem(10);
 				width: 1em;
 				height: 1em;
 				vertical-align: -.15em;
 				fill: #c4b597;
+				&:first-of-type {
+					margin-left: 0;
+				}
 			}
 		}
 	}
 
 	.music-cover {
 		width: rem($musicPlayerH);
-		box-shadow: 1px 3px 10px rgba(0, 0, 0, .3);
+		box-shadow: rem(1) rem(3) rem(10) rgba(0, 0, 0, .3);
 		z-index: 2;
 		position: relative;
 		background: #fff;
+		transition: padding 50ms linear;
 
 		img {
 			width: 100%;
 			height: 100%;
+		}
+	}
+}
+
+.music-list {
+	position: absolute;
+	bottom: calc(100% + #{rem(5)});
+	width: 96%;
+	min-height: rem(34);
+	background-color: #f8f5f5;
+	left: 2%;
+	box-shadow: 0 rem(15) rem(30) 0 rgba(0, 0, 0, .15);
+	padding: rem(5);
+	transition: all 100ms ease;
+
+	&.hidden {
+		width: 0;
+		height: 0;
+		min-height: 0;
+		overflow: hidden;
+		padding: 0;
+		.list-content {
+			height: 0;
+			overflow: hidden;
+			li {
+				height: 0;
+			}
+		}
+	}
+
+	.list-content {
+		max-height: rem(160);
+		overflow-y: auto;
+		user-select: none;
+		transition: all 100ms ease;
+		li {
+			padding: rem(2) 0;
+			font-size: rem(12);
+			color: rgba(51, 51, 51, .7);
+			transition: all 100ms ease;
+			cursor: default;
+			border-bottom: 1px solid #eee;
+			height: rem(25);
+
+			&:last-of-type {
+				border-bottom: none;
+			}
+
+			&.active {
+				color: salmon;
+			}
+
+			&:hover {
+				color: rgba(51, 51, 51, 1);
+
+				&.active {
+					color: salmon;
+				}
+			}
+
+			span {
+				display: inline-block;
+				height: 100%;
+				vertical-align: middle;
+			}
+			$musicTitleWidth: 50%;
+			.music-title {
+				display: inline-block;
+				max-width: $musicTitleWidth;
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+			.music-author {
+				display: inline-block;
+				max-width: calc(100% - #{$musicTitleWidth} - 5%);
+				padding: 0 rem(10);
+				white-space: nowrap;
+				overflow: hidden;
+				text-overflow: ellipsis;
+			}
+		}
+	}
+
+	.search-wrap {
+		padding: rem(2);
+		position: relative;
+		height: rem(30);
+
+		.search-icon {
+			width: 1rem;
+			height: 1rem;
+			color: #bba477;
+			fill: #bba477;
+			position: absolute;
+			left: rem(4);
+			top: calc(50% - .5rem);
+			z-index: 4;
+		}
+
+		.search-input {
+			position: absolute;
+			left: 0;
+			top: 0;
+			z-index: 100;
+			width: 100%;
+			box-sizing: border-box;
+			padding: rem(8) rem(8) rem(8) rem(30);
+			background: transparent;
+			border: none;
+			outline: none;
+			height: rem(30);
+			color: #555;
 		}
 	}
 }
@@ -118,7 +244,7 @@ $musicPlayerSML: $musicPlayerH;
 		right: 0;
 		top: 0;
 		color: #c4b597;
-		font-size: 30px;
+		font-size: rem(30);
 		z-index: 105;
 	}
 }
