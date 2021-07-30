@@ -39,6 +39,7 @@ module.exports = {
 		DOMAIN: getDomain(process.env.DOMAIN),
 		USER_TOKEN_COOKIE_NAME: process.env.USER_TOKEN_COOKIE_NAME,
 		AUTH_CODE_COOKIE_NAME: process.env.AUTH_CODE_COOKIE_NAME,
+		COOKIE_TIME: process.env.COOKIE_TIME ? Number(process.env.COOKIE_TIME) : 1000 * 60 * 10, // 默认十分钟
 		SECRET: process.env.SECRET,
 		USE_DB: process.env.USE_DB == undefined ? false : booleanMap.get(process.env.USE_DB),
 		MYSQL_PORT: Number(process.env.MYSQL_PORT) || 3306,

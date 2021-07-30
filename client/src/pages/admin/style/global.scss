@@ -1,0 +1,33 @@
+@import "@/style/lib/_variable";
+@import "@/style/lib/_function";
+
+$contentPadding: 5;
+
+//App
+.blog-app-admin-view{
+	height: 100vh;
+	overflow: hidden;
+
+	.blog-app-admin-content {
+		display: flex;
+		.blog-app-admin-sider {
+			width: rem(200);
+			height: auto;
+		}
+		.blog-admin-content-view {
+			flex: 1;
+			box-sizing: border-box;
+			background: #faf9f9;
+			padding: rem($contentPadding);
+			height: calc(100vh - #{rem($headerH)});
+			overflow-y: auto;
+		}
+	}
+}
+
+.blog-panel {
+	background: #fff;
+	min-height: calc(100vh - #{rem($headerH)} - #{rem(2 * $contentPadding)});
+	box-shadow: 0 0 5px #d2d2d5;
+	padding: rem(10);
+}

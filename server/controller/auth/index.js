@@ -77,11 +77,11 @@ module.exports = {
 			if (query.success) {
 				const payload = query.model
 				ctx.cookies.set(ctx.config.AUTH_CODE_COOKIE_NAME, "", { signed: false, maxAge: 0 })
-				const token = await jwt.sign(payload, ctx.config.SECRET, { expiresIn: 10 * 60 * 1000 })
+				const token = await jwt.sign(payload, ctx.config.SECRET, { expiresIn: ctx.config.COOKIE_TIME })
 				ctx.cookies.set(ctx.config.USER_TOKEN_COOKIE_NAME, token, {
 					domain: ctx.config.DOMAIN,
 					path: "/",
-					maxAge: 10 * 60 * 1000,
+					maxAge: ctx.config.COOKIE_TIME,
 					overwrite: false,
 					httpOnly: true,
 				})

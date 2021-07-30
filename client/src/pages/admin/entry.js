@@ -1,16 +1,17 @@
 import Vue from "vue"
-import store from "@/pages/root/store/index"
-import router from "@/pages/root/router/index"
-import App from "@/pages/root/App"
+import App from "./App"
+import store from "@/pages/admin/store"
+import router from "@/pages/admin/router"
 import Antd from "@/lib/ant-design"
 import "@/style/init.scss"
+import "@/pages/admin/style/global.scss"
 
 Vue.config.productionTip = false
 
 Vue.use(Antd)
 
 new Vue({
-	store,
 	router,
+	store,
 	render: h => h(App),
 }).$mount("#app")

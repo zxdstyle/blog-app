@@ -55,11 +55,11 @@ module.exports = async (app, config) => {
 		exposeHeaders: ["WWW-Authenticate", "Server-Authorization"]
 	}))
 
+	app.use((ctx, next) => verifyAuth(ctx, next))
+
 	app.use(koaStatic(path.resolve(__dirname, "../public")))
 
 	app.use(koaStatic(path.resolve(__dirname, "../static")))
-
-	app.use((ctx, next) => verifyAuth(ctx, next))
 
 	app.use(router.routes()).use(router.allowedMethods())
 

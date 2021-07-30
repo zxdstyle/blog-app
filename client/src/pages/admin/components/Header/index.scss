@@ -1,0 +1,34 @@
+/**
+ *	admin header
+ */
+
+@import "@style/lib/_function";
+@import "@style/lib/_variable";
+
+$logo-position-x: 30;
+
+.blog-admin-header {
+	height: rem($headerH);
+	background-color: #fff;
+	//box-shadow: 0 2px 6px #EEEEEE;
+	border-bottom: 1px solid #eee;
+	background-image: url("@assets/img/blog-logo.png");
+	background-size: auto 100%;
+	background-repeat: no-repeat;
+	background-position-x: rem($logo-position-x);
+	padding: 0 rem($logo-position-x);
+	top: 0;
+	left: 0;
+	right: 0;
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+
+	.blog-admin-header-actions {
+	}
+}
+
+
+.ant-dropdown-menu {
+	width: rem(100);
+}

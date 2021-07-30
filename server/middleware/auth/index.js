@@ -10,7 +10,7 @@ const jwt = require("jsonwebtoken")
 const { logger } = require("../log")
 
 // api black list(RegExp)
-const apiBlackList = ["^/api/permission"]
+const apiBlackList = ["^/api/permission", "^/admin$"]
 
 module.exports = async (ctx, next) => {
 	const hasBlackItem = apiBlackList.filter(item => {
@@ -18,37 +18,39 @@ module.exports = async (ctx, next) => {
 		let flag = reg.test(ctx.request.url)
 		return flag
 	}).length > 0
+
 	if (!hasBlackItem) {
+		const userToken = ctx.cookies.get(ctx.config.USER_TOKEN_COOKIE_NAME)
+		if (userToken) {
+			try	{
+				await jwt.verify(userToken, ctx.config.SECRET)
+				// 若果已登录
+				if (ctx.request.url === "/login") {
+					ctx.redirect("/")
+				}
+			} catch (error) {
+				logger.error("[Validate token fail]," + error)
+			}
+		}
 		await next()
 	} else {
 		const preToken = ctx.cookies.get(ctx.config.USER_TOKEN_COOKIE_NAME)
 		try {
 			const tokenData = await jwt.verify(preToken, ctx.config.SECRET)
-			console.log(tokenData)
-			// 模拟刷新token(通过`tokenData`查询数据库)
-			const payload = {
-				account: "admin",
-				sex: 1,
-				phone: "18722229999",
-				priority: 1,
-				position: "programmer",
-				date: +new Date,
-			}
-			const token = await jwt.sign(payload, ctx.config.SECRET, {expiresIn: 10 * 60 * 1000})
+			const payload = Object.assign({}, tokenData)
+			delete payload.iat
+			delete payload.exp
+			const token = await jwt.sign(payload, ctx.config.SECRET, { expiresIn: ctx.config.COOKIE_TIME })
 			ctx.cookies.set(ctx.config.USER_TOKEN_COOKIE_NAME, token, {
 				domain: ctx.config.DOMAIN,
 				path: "/",
-				maxAge: 10 * 60 * 1000,
+				maxAge: ctx.config.COOKIE_TIME,
 				overwrite: false,
 				httpOnly: true,
 			})
 			await next()
 		} catch (error) {
-			ctx.body = {
-				status: 401,
-				error: "未授权,请先登录...",
-				date: +new Date,
-			}
+			ctx.redirect("/login")
 			logger.error("[Validate token fail]," + error)
 		}
 	}

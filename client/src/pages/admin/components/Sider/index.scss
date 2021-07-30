@@ -1,0 +1,15 @@
+/**
+ *	admin sider
+ */
+
+@import "@style/lib/_function";
+@import "@style/lib/_variable";
+
+.blog-admin-sider {
+	height: calc(100vh - #{rem($headerH)});
+}
+
+
+.blog-admin-sider-menu {
+	height: 100%;
+}
