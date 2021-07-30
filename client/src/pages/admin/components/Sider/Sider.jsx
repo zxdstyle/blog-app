@@ -43,6 +43,7 @@ const Sider = {
 
 	methods: {
 		handleClickMenu({ key }) {
+			if (this.selectedMenu === key) return
 			this.$router.push({ name: key })
 		},
 	},
@@ -63,7 +64,7 @@ const Sider = {
 								? (
 									<a-sub-menu key={menu.key}>
 										<span slot="title">
-											<a-icon type="mail" />
+											<a-icon type={menu.icon} />
 											<span>{menu.title}</span>
 										</span>
 										{
@@ -79,7 +80,7 @@ const Sider = {
 								)
 								: (
 									<a-menu-item key={menu.key}>
-										<a-icon type="pie-chart" />
+										<a-icon type={menu.icon} />
 										<span>{menu.title}</span>
 									</a-menu-item>
 								)

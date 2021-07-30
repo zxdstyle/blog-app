@@ -7,6 +7,7 @@ export const menuRoutes = [
 	{
 		path: "/home",
 		title: "统计",
+		icon: "bar-chart",
 		name: "home",
 		key: "home",
 		showMenu: true,
@@ -18,11 +19,12 @@ export const menuRoutes = [
 	{
 		path: "/article",
 		title: "文章管理",
+		icon: "form",
 		key: "article",
 		showMenu: true,
 		children: [
 			{
-				path: "",
+				path: "list",
 				title: "文章列表",
 				name: "articleList",
 				key: "articleList",
@@ -38,7 +40,17 @@ export const menuRoutes = [
 				key: "articleDetail",
 				showMenu: false,
 				meta: {
-					matchRoute: "articleDetail",
+					matchRoute: "articleList",
+				}
+			},
+			{
+				path: "detail/:articleId/comment",
+				title: "文章评论",
+				name: "articleComment",
+				key: "articleComment",
+				showMenu: false,
+				meta: {
+					matchRoute: "articleList",
 				}
 			},
 			{
@@ -62,6 +74,43 @@ export const menuRoutes = [
 				}
 			},
 		]
+	},
+	{
+		path: "/music",
+		title: "音乐管理",
+		icon: "customer-service",
+		name: "music",
+		key: "music",
+		showMenu: true,
+		meta: {},
+		children: [
+			{
+				path: "list",
+				title: "歌曲列表",
+				name: "musicList",
+				key: "musicList",
+				showMenu: true,
+				meta: {},
+			},
+		],
+	},
+	{
+		path: "/message",
+		title: "留言列表",
+		icon: "message",
+		name: "message",
+		key: "message",
+		showMenu: true,
+		meta: {},
+	},
+	{
+		path: "/resource",
+		title: "资源管理",
+		icon: "cloud-server",
+		name: "resource",
+		key: "resource",
+		showMenu: true,
+		meta: {},
 	}
 ]
 
