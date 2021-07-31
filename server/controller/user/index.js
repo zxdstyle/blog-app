@@ -6,23 +6,19 @@
  *  Copyright (c) 2017-present github.com/Peachick. All rights reserved.
  */
 
+const jwt = require("jsonwebtoken")
+
+const userService = require("../../service/permission/user")
+
 module.exports = {
 	// 获取用户信息
-	getUsers: async (ctx, next) => {
-		ctx.body = await ctx.Mock({
-			status: 200,
-			path: ctx.path,
-			dataList: {
-				"users|20-30": [
-					{
-						"id|+1": 0,
-						"age|18-24": 18,
-						"username": "@cname",
-						"province": "@province"
-					}
-				],
-			},
-			date: +new Date,
-		})
+	getUser: async (ctx, next) => {
+		await userService.getUser(ctx, next)
+		ctx.body = {
+			success: true,
+			model: {
+				username: "admin"
+			}
+		}
 	},
 }

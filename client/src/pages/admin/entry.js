@@ -6,7 +6,11 @@ import Antd from "@/lib/ant-design"
 import "@/style/init.scss"
 import "@/pages/admin/style/global.scss"
 
+import eventBus from "@/util/event-bus"
+
 Vue.config.productionTip = false
+
+Vue.prototype.$eventBus = eventBus
 
 Vue.use(Antd)
 

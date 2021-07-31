@@ -10,6 +10,7 @@ import {
 	BackTop,
 	Spin,
 	Avatar,
+	Result,
 } from "ant-design-vue"
 
 const components = [
@@ -24,6 +25,7 @@ const components = [
 	BackTop,
 	Spin,
 	Avatar,
+	Result,
 ]
 
 const install = function (Vue) {

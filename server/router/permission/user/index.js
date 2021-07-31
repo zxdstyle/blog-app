@@ -12,7 +12,7 @@ const router = new koaRouter({ prefix: "/api/permission/user" })
 const userController = require("../../../controller/user")
 
 router
-	.get("/", userController.getUsers)
+	.get("/", userController.getUser)
 
 
 module.exports = router

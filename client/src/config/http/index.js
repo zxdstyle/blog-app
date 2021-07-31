@@ -8,6 +8,7 @@
 
 import axios from "axios"
 import qs from "qs"
+import unifyErrorInterceptor from "@config/http/interceptors/unify-error"
 
 export default function createRequest({
 	baseURL, responseType, headers,
@@ -41,5 +42,8 @@ export default function createRequest({
 			throw error
 		},
 	)
+
+	xhr.interceptors.response.use((response) => response, unifyErrorInterceptor)
+
 	return xhr
 }

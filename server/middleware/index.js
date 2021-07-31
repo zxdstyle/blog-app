@@ -29,6 +29,7 @@ module.exports = async (app, config) => {
 
 	app.use(async (ctx, next) => {
 		ctx.config = config
+		ctx.isDev = isDev
 		await next()
 	})
 

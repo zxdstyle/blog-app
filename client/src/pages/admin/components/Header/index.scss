@@ -17,6 +17,7 @@ $logo-position-x: 30;
 	background-repeat: no-repeat;
 	background-position-x: rem($logo-position-x);
 	padding: 0 rem($logo-position-x);
+	position: relative;
 	top: 0;
 	left: 0;
 	right: 0;

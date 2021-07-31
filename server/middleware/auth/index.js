@@ -50,8 +50,20 @@ module.exports = async (ctx, next) => {
 			})
 			await next()
 		} catch (error) {
+			if (ctx.isDev) {
+				ctx.status = 401
+				ctx.body = {
+					error,
+					code: 401,
+					errorMsg: {
+						message: "请先登录...",
+					}
+				}
+				return
+			}
 			ctx.redirect("/login")
 			logger.error("[Validate token fail]," + error)
+			
 		}
 	}
 }

@@ -13,7 +13,15 @@ export default {
 		return {
 		}
 	},
+	beforeMount() {
+		if (this.$eventBus) {
+			this.$eventBus.$on("api-error", this.handleApiError);
+		}
+	},
 	methods: {
+		handleApiError(err) {
+			this.$message.error(err.message);
+		},
 	},
 }
 </script>
