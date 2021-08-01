@@ -135,7 +135,7 @@ script.
 			timer = setInterval(() => {
 				loadingNum.innerHTML = Number(loadingNum.innerHTML) + 2
 				if (Number(loadingNum.innerHTML) > 90) {
-					loadingNum.innerHTML = Number(loadingNum.innerHTML) + 0.2
+					loadingNum.innerHTML = Number(Number(loadingNum.innerHTML) + 0.2).toFixed()
 				}
 				if (Number(loadingNum.innerHTML) > 98) {
 					clearInterval(timer)
@@ -146,4 +146,8 @@ script.
 	window.onerror = () => {
 		clearInterval(timer)
 		document.querySelector(".loading-progress").innerHTML = "页面加载失败..."
+	}
+	window.onload = () => {
+		document.querySelector("#blog-app-loading").setAttribute("class", "fade")
+		document.querySelector("#blog-app-loading").style.zIndex = -10
 	}

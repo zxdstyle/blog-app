@@ -1,7 +1,7 @@
 {
-  "name": "webpack-mpa-template",
+  "name": "Peachick's blog",
   "version": "0.1.0",
-  "description": "使用Webpack搭建多页面应用，工程使用传统页面和单页面混合开发",
+  "description": "Peachick's blog、Peachick的博客、博客系统",
   "main": "index.js",
   "scripts": {
     "clear": "node ./build/webpack.clear.js",
@@ -25,7 +25,7 @@
     ],
     "delay": "1500"
   },
-  "repository": "https://github.com/Peachick/webpack-mpa-template.git",
+  "repository": "https://github.com/Peachick/blog-app.git",
   "author": "Peachick <wsm_1105@163.com>",
   "license": "MIT",
   "private": false,

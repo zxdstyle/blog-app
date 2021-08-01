@@ -20,10 +20,10 @@ module.exports = {
 			noise: 4,
 			width: 86,
 			height: 32,
-			inverse: false,
+			inverse: true,
 			ignoreChars: "0oO1ilI",
 			color: true,
-			background: "#eee",
+			background: "#dedede",
 		})
 		console.log("[captcha]: " + captcha.text)
 		const md5_code = await MD5(captcha.text.toLowerCase()).toString()

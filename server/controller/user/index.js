@@ -13,11 +13,21 @@ const userService = require("../../service/permission/user")
 module.exports = {
 	// 获取用户信息
 	getUser: async (ctx, next) => {
-		await userService.getUser(ctx, next)
-		ctx.body = {
-			success: true,
-			model: {
-				username: "admin"
+		try {
+			const query = await userService.getUser(ctx, next)
+			if (query.success) {
+				ctx.body = {
+					...query,
+					code: 200,
+				}
+			} else {
+				ctx.body = {
+					...query,
+				}
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
 			}
 		}
 	},
