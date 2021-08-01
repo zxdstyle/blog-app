@@ -11,6 +11,10 @@ import {
 	Spin,
 	Avatar,
 	Result,
+	Table,
+	Form,
+	Select,
+	ConfigProvider,
 } from "ant-design-vue"
 
 const components = [
@@ -26,12 +30,17 @@ const components = [
 	Spin,
 	Avatar,
 	Result,
+	Table,
+	Form,
+	Select,
+	ConfigProvider,
 ]
 
 const install = function (Vue) {
 	components.map((component) => {
 		Vue.use(component)
 	})
+	Vue.component(ConfigProvider.name, ConfigProvider)
 
 	Vue.prototype.$message = message
 	Vue.prototype.$notification = notification

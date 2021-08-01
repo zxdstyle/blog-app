@@ -30,4 +30,19 @@ $contentPadding: 5;
 	min-height: calc(100vh - #{rem($headerH)} - #{rem(2 * $contentPadding)});
 	box-shadow: 0 0 5px #d2d2d5;
 	padding: rem(10);
+
+	.panel-filter {
+		display: flex;
+		align-items: center;
+		padding: rem(10) 0;
+	}
+	.panel-filter-form {
+		display: flex;
+		align-items: center;
+
+		.ant-form-item {
+			margin-bottom: 0;
+			margin-right: rem(10);
+		}
+	}
 }

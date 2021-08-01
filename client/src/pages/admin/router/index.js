@@ -22,6 +22,7 @@ export const menuRoutes = [
 		icon: "form",
 		key: "article",
 		showMenu: true,
+		component: () => import("@/pages/admin/views/article/view"),
 		children: [
 			{
 				path: "list",
@@ -29,6 +30,7 @@ export const menuRoutes = [
 				name: "articleList",
 				key: "articleList",
 				showMenu: true,
+				component: () => import("@/pages/admin/views/article/index"),
 				meta: {
 					matchRoute: "articleList",
 				},
