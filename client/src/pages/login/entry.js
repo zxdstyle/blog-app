@@ -16,6 +16,8 @@ const $codeImg = $(".code-img"),
 	$pwd = $("#pwd"),
 	$code = $("#code")
 
+window.onload = () => $email.focus()
+
 // 验证码
 refreshCode()
 $codeImg.on("click", refreshCode)

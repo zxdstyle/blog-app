@@ -27,7 +27,7 @@ module.exports = {
 				where (art.title like '%${keyword}%' or art.intro like '%${keyword}%'
 				or art.keyword like '%${keyword}%' or art.content like '%${keyword}%')
 				and art.publish like '%${publish}%'
-				limit ${page},${limit}
+				limit ${page * limit},${limit}
 			`)
 			queryMsg = {
 				code: 200,

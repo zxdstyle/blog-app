@@ -14,6 +14,7 @@ import {
 	Table,
 	Form,
 	Select,
+	Drawer,
 	ConfigProvider,
 } from "ant-design-vue"
 
@@ -33,6 +34,7 @@ const components = [
 	Table,
 	Form,
 	Select,
+	Drawer,
 	ConfigProvider,
 ]
 

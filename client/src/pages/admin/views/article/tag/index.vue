@@ -7,15 +7,6 @@
 				class="panel-filter-form"
 			>
 				<a-form-item>
-					<a-select
-						v-decorator="['publish',{
-							initialValue: '',
-						}]"
-						:options="publishOptions"
-						style="width: 120px"
-					/>
-				</a-form-item>
-				<a-form-item>
 					<a-input
 						v-decorator="['keyword',{
 							initialValue: '',
@@ -35,9 +26,9 @@
 			<div class="filter-action">
 				<a-button
 					type="primary"
-					@click="() => $router.push({ name: 'createArticle' })"
+					@click="createTag"
 				>
-					新建文章
+					新建标签
 				</a-button>
 			</div>
 		</div>
@@ -50,21 +41,30 @@
 				:pagination="pagination"
 			>
 				<template
+					slot="number"
+					slot-scope="text, record, index"
+				>
+					{{ (page - 1) * limit + index + 1 }}
+				</template>
+
+				<template
+					slot="createTime"
+					slot-scope="text, record"
+				>
+					{{ DateFormat("yyyy-MM-dd HH:mm", record.createTime) }}
+				</template>
+
+				<template
 					slot="action"
 					slot-scope="text, record"
 				>
 					<a
-						@click="() => $router.push({ name: 'articleDetail', params: { articleId: record.uuid } })"
-					>
-						详情
-					</a>
-					<a
-						@click="() => $router.push({ name: 'articleEdit', params: { articleId: record.uuid } })"
+						@click="() => handleEdit(record)"
 					>
 						编辑
 					</a>
 					<a
-						@click="() => handleRemoveArticle(record)"
+						@click="() => handleRemove(record)"
 					>
 						删除
 					</a>
@@ -75,86 +75,51 @@
 </template>
 
 <script>
-import { mapState, mapActions, mapGetters } from "vuex"
-
-const publishOptions = [
-	{
-		label: "全部",
-		value: "",
-		key: -1,
-	},
-	{
-		label: "未发布",
-		value: 0,
-		key: 0,
-	},
-	{
-		label: "已发布",
-		value: 1,
-		key: 1
-	},
-]
-
+import DateFormat from "@/util/generic/date"
+import { mapState, mapGetters, mapActions } from "vuex"
 function getColumns() {
 	return [
 		{
-			title: "标题",
+			title: "序号",
+			width: "10%",
+			scopedSlots: { customRender: "number" },
+		},
+		{
+			title: "名称",
 			dataIndex: "title",
-			width: "12%"
-		},
-		{
-			title: "简介",
-			dataIndex: "intro",
-			width: "15%"
-		},
-		{
-			title: "关键字",
-			dataIndex: "keyword",
-			width: "10%"
-		},
-		{
-			title: "已发布",
-			dataIndex: "publish",
-			width: "8%"
-		},
-		{
-			title: "作者",
-			dataIndex: "username",
-			width: "8%"
 		},
 		{
 			title: "创建时间",
-			dataIndex: "createTime",
-			width: "12%"
+			width: "25%",
+			scopedSlots: { customRender: "createTime" },
 		},
 		{
 			title: "操作",
-			width: "15%",
+			width: "20%",
 			scopedSlots: { customRender: "action" }
 		},
 	]
 }
 
 export default {
-	name: "ArticleList",
+	name: "ArticleTag",
 
 	data() {
-		this.publishOptions = publishOptions
-		this.columns = getColumns()
-		this.form = this.$form.createForm(this)
+		this.columns = getColumns();
+		this.form = this.$form.createForm(this);
 		return {}
 	},
 
 	computed: {
 		...mapState({
-			dataSource: (state) => state.article.articleList,
-			page: (state) => state.article.page,
-			limit: (state) => state.article.limit,
-			total: (state) => state.article.total,
-			loading: (state) => state.article.loading,
+			dataSource: (state) => state.article.tag.tags,
+			page: (state) => state.article.tag.page,
+			limit: (state) => state.article.tag.limit,
+			total: (state) => state.article.tag.total,
+			loading: (state) => state.article.tag.loading,
 		}),
 		...mapGetters({
-			totalPage: "article/totalPage",
+			totalPage: "article/tag/totalPage",
 		}),
 		pagination() {
 			const self = this
@@ -170,13 +135,13 @@ export default {
 					return `共 ${self.totalPage} 页, ${total} 条数据`
 				},
 				onChange: (page, pageSize) => {
-					self.fetchArticleList({
+					self.fetchTagList({
 						page,
 						limit: pageSize,
 					})
 				},
 				onShowSizeChange: (current, size) => {
-					self.fetchArticleList({
+					self.fetchTagList({
 						page: current,
 						limit: size,
 					})
@@ -186,27 +151,28 @@ export default {
 	},
 
 	mounted() {
-		this.fetchArticleList()
+		this.fetchTagList()
 	},
 
 	methods: {
+		DateFormat,
 		...mapActions({
-			fetchArticleList: "article/fetchArticleList",
+			fetchTagList: "article/tag/fetchTagList",
 		}),
-		handleRemoveArticle({ id, title }) {
-			this.$confirm({
-				title: `您确定要删除 《${title}》 此文章吗？`,
-				okType: "danger",
-				onOk() {
-					console.log(id)
-				}
-			})
+		handleRemove(record) {
+			console.log(record)
+		},
+		handleEdit(record) {
+			console.log(record)
+		},
+		createTag() {
+			this.$message.success("新建标签...")
 		},
 		handleSubmit(e) {
 			e.preventDefault()
 			this.form.validateFields((err, values) => {
 				if (!err) {
-					this.fetchArticleList({
+					this.fetchTagList({
 						page: 1,
 						filter: {
 							...values,
@@ -214,11 +180,11 @@ export default {
 					})
 				}
 			})
-		}
-	},
+		},
+	}
 }
 </script>
 
-<style lang="scss" scoped>
+<style scoped>
 
 </style>

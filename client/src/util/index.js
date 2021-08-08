@@ -16,3 +16,9 @@ export function getRedirectUrl(name){
 	var url = search.substr(1).match(reg)
 	return url ? url[2] : "/"
 }
+
+export function getAfterActionPage(total, limit, page) {
+	return page > 1
+		? total - 1 > (page - 1) * limit ? page : page - 1
+		: 1
+}

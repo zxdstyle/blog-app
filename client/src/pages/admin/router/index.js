@@ -36,11 +36,34 @@ export const menuRoutes = [
 				},
 			},
 			{
+				path: "create",
+				title: "新建文章",
+				name: "createArticle",
+				key: "createArticle",
+				showMenu: false,
+				component: () => import("@/pages/admin/views/article/create"),
+				meta: {
+					matchRoute: "articleList",
+				}
+			},
+			{
+				path: "edit/:articleId",
+				title: "编辑文章",
+				name: "articleEdit",
+				key: "articleEdit",
+				showMenu: false,
+				component: () => import("@/pages/admin/views/article/edit"),
+				meta: {
+					matchRoute: "articleList",
+				}
+			},
+			{
 				path: "detail/:articleId",
 				title: "文章详情",
 				name: "articleDetail",
 				key: "articleDetail",
 				showMenu: false,
+				component: () => import("@/pages/admin/views/article/detail"),
 				meta: {
 					matchRoute: "articleList",
 				}
@@ -61,6 +84,7 @@ export const menuRoutes = [
 				name: "articleCategory",
 				key: "articleCategory",
 				showMenu: true,
+				component: () => import("@/pages/admin/views/article/category/index"),
 				meta: {
 					matchRoute: "articleCategory",
 				}
@@ -71,6 +95,7 @@ export const menuRoutes = [
 				name: "articleTag",
 				key: "articleTag",
 				showMenu: true,
+				component: () => import("@/pages/admin/views/article/tag/index"),
 				meta: {
 					matchRoute: "articleTag",
 				}
