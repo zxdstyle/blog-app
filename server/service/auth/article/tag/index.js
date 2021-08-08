@@ -37,4 +37,143 @@ module.exports = {
 			}
 		}
 	},
+	// 新建标签
+	createTag: async(ctx, next) => {
+		let { title } = ctx.request.body
+		try {
+			let queryMsg = {}
+			const { results } = await ctx.db(`
+				select * from tag
+				where title='${title}'
+			`)
+			if (results && results.length) {
+				queryMsg = {
+					code: 301,
+					success: false,
+					error: "标签已存在",
+					errorMsg: {
+						message: "标签已存在"
+					},
+				}
+			} else {
+				const { results: createQuery } = await ctx.db(`
+					insert into tag (title, createTime) values ('${title}', NOW())
+				`)
+				queryMsg = {
+					code: 200,
+					success: true,
+					model: createQuery[0],
+				}
+			}
+			
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
+	// 删除标签
+	removeTag: async(ctx, next) => {
+		let { id } = ctx.request.body
+		try {
+			let queryMsg = {}
+			const { results } = await ctx.db(`
+				select * from tag
+				where id=${id}
+			`)
+			if (results && !results.length) {
+				queryMsg = {
+					code: 301,
+					success: false,
+					error: "删除失败，标签不存在",
+					errorMsg: {
+						message: "删除失败，标签不存在"
+					},
+				}
+			} else {
+				await ctx.db(`
+					delete from tag where id=${id}
+				`)
+				queryMsg = {
+					code: 200,
+					success: true,
+				}
+			}
+			
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
+	// 编辑标签
+	updateTag: async(ctx, next) => {
+		let { id, title } = ctx.request.body
+		try {
+			let queryMsg = {}
+			const { results } = await ctx.db(`
+				select * from tag
+				where id=${id}
+			`)
+			if (results && !results.length) {
+				queryMsg = {
+					code: 301,
+					success: false,
+					error: "编辑失败，标签不存在",
+					errorMsg: {
+						message: "编辑失败，标签不存在"
+					},
+				}
+			} else if(results && results.length){
+				const { results: existTitleResult } = await ctx.db(`
+					select * from tag where title='${title.trim()}'
+				`)
+				if (existTitleResult && existTitleResult.length) {
+					queryMsg = {
+						code: 301,
+						success: false,
+						error: "编辑失败，标签名称重复",
+						errorMsg: {
+							message: "编辑失败，标签名称重复"
+						},
+					}
+				} else {
+					await ctx.db(`
+						update tag set title = '${title.trim()}' where id=${id}
+					`)
+					queryMsg = {
+						code: 200,
+						success: true,
+					}
+				}
+			} else {
+				await ctx.db(`
+					update tag set title = '${title.trim()}' where id=${id}
+				`)
+				queryMsg = {
+					code: 200,
+					success: true,
+				}
+			}
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
 }

@@ -7,7 +7,8 @@
 			label="名称"
 		>
 			<a-input
-				v-decorator="[FORM_FIELD.TITLE, {
+				v-decorator="['title', {
+					initialValue: '',
 					rules: [
 						{ required: true, message: '请输入分类名' }
 					]
@@ -34,7 +35,7 @@
 
 <script>
 export default {
-	name: "EditCategoryForm",
+	name: "AddTagForm",
 
 	inject: ["emitClose", "emitSubmit"],
 
@@ -43,23 +44,12 @@ export default {
 			type: Boolean,
 			default: false,
 		},
-		formData: {
-			type: Object,
-			default: () => {},
-		}
 	},
 
 	data() {
-		this.FORM_FIELD = {
-			TITLE: "title",
-		}
+		this.form = this.$form.createForm(this)
 		return {
-			form: this.$form.createForm(this),
 		}
-	},
-
-	mounted() {
-		this.initForm()
 	},
 
 	methods: {
@@ -70,14 +60,7 @@ export default {
 					this.emitSubmit(values)
 				}
 			})
-		},
-		initForm() {
-			const fields = {}
-			Object.values(this.FORM_FIELD).forEach((key) => {
-				fields[key] = this.formData[key]
-			})
-			this.form.setFieldsValue(fields)
-		},
+		}
 	}
 }
 </script>

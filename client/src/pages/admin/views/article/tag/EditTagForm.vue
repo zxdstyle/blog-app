@@ -34,7 +34,7 @@
 
 <script>
 export default {
-	name: "EditCategoryForm",
+	name: "EditTagForm",
 
 	inject: ["emitClose", "emitSubmit"],
 

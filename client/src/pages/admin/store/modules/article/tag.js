@@ -4,6 +4,9 @@
 
 import {
 	GetTagListApi,
+	CreateTagApi,
+	UpdateTagApi,
+	RemoveTagApi,
 } from "@/api/article/tag-api"
 
 const state = {
@@ -74,7 +77,41 @@ const actions = {
 			commit("setLoading", false)
 			return error
 		}
-	}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async createTag({ commit }, payload) {
+		try	{
+			const api = new CreateTagApi()
+			api.data = { ...payload }
+			const { model } = await api.send()
+			return model
+		} catch (e) {
+			const error = new Error(e.message)
+			throw error
+		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async removeTag({ commit }, payload) {
+		try	{
+			const api = new RemoveTagApi()
+			api.data = { ...payload }
+			return await api.send()
+		} catch (e) {
+			const error = new Error(e.message)
+			throw error
+		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async updateTag({ commit }, payload) {
+		try	{
+			const api = new UpdateTagApi()
+			api.data = { ...payload }
+			return await api.send()
+		} catch (e) {
+			const error = new Error(e.message)
+			throw error
+		}
+	},
 }
 
 export default {

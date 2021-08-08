@@ -3,7 +3,7 @@
 		<div class="panel-filter">
 			<a-form
 				:form="form"
-				@submit="handleSubmit"
+				@submit="handleSearch"
 				class="panel-filter-form"
 			>
 				<a-form-item>
@@ -26,7 +26,7 @@
 			<div class="filter-action">
 				<a-button
 					type="primary"
-					@click="createTag"
+					@click="() => openDrawer(DRAWER_TYPE.ADD_TAG)"
 				>
 					新建标签
 				</a-button>
@@ -59,7 +59,7 @@
 					slot-scope="text, record"
 				>
 					<a
-						@click="() => handleEdit(record)"
+						@click="() => openDrawer(DRAWER_TYPE.EDIT_TAG, record)"
 					>
 						编辑
 					</a>
@@ -71,12 +71,40 @@
 				</template>
 			</a-table>
 		</div>
+		<drawer
+			:visible="visible"
+			:title="drawerTitle"
+			@submit="handleSubmit"
+			@close="closeDrawer"
+		>
+			<add-form
+				v-if="drawerType === DRAWER_TYPE.ADD_TAG"
+				:form-data="formData"
+				:loading="loadingSubmit"
+			/>
+			<edit-form
+				v-if="drawerType === DRAWER_TYPE.EDIT_TAG"
+				:form-data="formData"
+				:loading="loadingSubmit"
+			/>
+		</drawer>
 	</div>
 </template>
 
 <script>
-import DateFormat from "@/util/generic/date"
 import { mapState, mapGetters, mapActions } from "vuex"
+import { getAfterActionPage } from "@/util"
+import DateFormat from "@/util/generic/date"
+
+const Drawer = () => import(/* webpackChunkName: "Drawer" */"@/pages/admin/components/Drawer")
+const AddForm = () => import(/*webpackChunkName: "AddTagForm"*/"@/pages/admin/views/article/tag/AddTagForm")
+const EditForm = () => import(/*webpackChunkName: "EditTagForm"*/"@/pages/admin/views/article/tag/EditTagForm")
+
+const DRAWER_TYPE = {
+	EDIT_TAG: 'add_tag',
+	ADD_TAG: 'edit_tag',
+}
+
 function getColumns() {
 	return [
 		{
@@ -104,10 +132,31 @@ function getColumns() {
 export default {
 	name: "ArticleTag",
 
+	components: {
+		Drawer,
+		AddForm,
+		EditForm,
+	},
+
 	data() {
+		this.DRAWER_TYPE = DRAWER_TYPE
+		this.DRAWER_TITLE = {
+			[DRAWER_TYPE.ADD_TAG]: "新建标签",
+			[DRAWER_TYPE.EDIT_TAG]: '编辑标签',
+		}
+		this.DRAWER_API = {
+			[DRAWER_TYPE.ADD_TAG]: this.handleCreateTag,
+			[DRAWER_TYPE.EDIT_TAG]: this.handleEditTag,
+		}
 		this.columns = getColumns();
 		this.form = this.$form.createForm(this);
-		return {}
+		return {
+			visible: false,
+			drawerType: '',
+			drawerTitle: '',
+			loadingSubmit: false,
+			formData: {},
+		}
 	},
 
 	computed: {
@@ -158,17 +207,67 @@ export default {
 		DateFormat,
 		...mapActions({
 			fetchTagList: "article/tag/fetchTagList",
+			createTag: "article/tag/createTag",
+			removeTag: "article/tag/removeTag",
+			updateTag: "article/tag/updateTag",
 		}),
 		handleRemove(record) {
-			console.log(record)
+			const self = this
+			const page = getAfterActionPage(this.total, this.limit, this.page)
+			this.$confirm({
+				title: `您确定要删除 ${record.title} 标签吗？`,
+				okType: "danger",
+				onOk() {
+					const loading = self.$message.loading("操作中...", -1)
+					self.removeTag({ id: record.id })
+						.then(() => {
+							loading()
+							self.$message.success("删除成功!")
+							self.fetchTagList({ page })
+						})
+						.catch(loading)
+				}
+			})
 		},
-		handleEdit(record) {
-			console.log(record)
+		handleEditTag(formData) {
+			this.loadingSubmit = true
+			const loading = this.$message.loading("请稍后...", -1)
+			const { title }  = formData
+			const payload = {
+				id: this.formData.id,
+				title,
+			}
+			this.updateTag(payload)
+				.then(() => {
+					this.loadingSubmit = false
+					loading()
+					this.$message.success("编辑成功!")
+					this.closeDrawer();
+					this.fetchTagList();
+				})
+				.catch(() => {
+					this.loadingSubmit = false
+				})
 		},
-		createTag() {
-			this.$message.success("新建标签...")
+		handleCreateTag(formData) {
+			this.loadingSubmit = true
+			const loading = this.$message.loading("请稍后...", -1)
+			this.createTag(formData)
+				.then(() => {
+					this.loadingSubmit = false
+					loading()
+					this.$message.success("添加成功!")
+					this.closeDrawer();
+					this.fetchTagList();
+				})
+				.catch(() => {
+					this.loadingSubmit = false
+				})
 		},
-		handleSubmit(e) {
+		handleSubmit(formData) {
+			this.DRAWER_API[this.drawerType](formData)
+		},
+		handleSearch(e) {
 			e.preventDefault()
 			this.form.validateFields((err, values) => {
 				if (!err) {
@@ -180,6 +279,19 @@ export default {
 					})
 				}
 			})
+		},
+		openDrawer(drawerType, data) {
+			if (data) {
+				this.formData = data
+			}
+			this.visible = true
+			this.drawerType = drawerType
+			this.drawerTitle = this.DRAWER_TITLE[drawerType]
+		},
+		closeDrawer() {
+			this.visible = false
+			this.drawerTitle = ""
+			this.formData = {}
 		},
 	}
 }
