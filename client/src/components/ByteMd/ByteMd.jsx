@@ -19,6 +19,8 @@ import frontmatter from "@bytemd/plugin-frontmatter"
 import highlightSsr from "@bytemd/plugin-highlight-ssr"
 import math from "@bytemd/plugin-math"
 
+import "./index.scss"
+
 const plugins = [
 	gfm(),
 	highlight(),
@@ -72,13 +74,25 @@ export const Viewer = {
 export const Editor = {
 	...commonProps,
 
+	methods: {
+		handleUpload(files) {
+			console.log(files)
+		},
+	},
+
 	render() {
 		return (
 			<ByteEditor
 				value={this.value}
 				locale={this.locale}
 				plugins={this.plugins}
-				{...{on: {change: (...args) => this.$emit("change", ...args)}}}
+				placeholder={'请输入...'}
+				{...{
+					on: {
+						change: (...args) => this.$emit("change", ...args),
+						uploadImages: this.handleUpload
+					}
+				}}
 			/>
 		)
 	}

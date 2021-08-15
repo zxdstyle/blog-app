@@ -26,7 +26,24 @@ function theIP(){
 	}
 }
 
+const TYPE_MAP = {
+	String: "[object String]",
+	Array: "[object Array]",
+	Object: "[object Object]",
+	Number: "[object Number]",
+	Boolean: "[object Boolean]",
+	Undefined: "[object Undefined]",
+	Null: "[object Null]",
+	Function: "[object Function]",
+	Symbol: "[object Symbol]",
+}
+function validateType(data, type) {
+	if (!TYPE_MAP[type]) return false
+	return Object.prototype.toString.call(data) === TYPE_MAP[type]
+}
+
 
 module.exports = {
-	theIP
+	theIP,
+	validateType,
 }

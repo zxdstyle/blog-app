@@ -26,16 +26,7 @@ module.exports = {
 	createTag: async(ctx, next) => {
 		try {
 			const { title } = ctx.request.body
-			if (!title || !title.trim().length) {
-				ctx.body = {
-					code: 301,
-					errorMsg: {
-						message: "名称不能为空"
-					},
-					error: "名称不能为空",
-				}
-				return
-			}
+			await ctx.validateField(title, "名称不能为空")
 			const query = await articleService.createTag(ctx, next)
 			ctx.body = {
 				...query,
@@ -65,16 +56,7 @@ module.exports = {
 	updateTag: async(ctx, next) => {
 		try {
 			const { title } = ctx.request.body
-			if (!title || !title.trim().length) {
-				ctx.body = {
-					code: 301,
-					errorMsg: {
-						message: "名称不能为空"
-					},
-					error: "名称不能为空",
-				}
-				return
-			}
+			await ctx.validateField(title, "名称不能为空")
 			const query = await articleService.updateTag(ctx, next)
 			ctx.body = {
 				...query,

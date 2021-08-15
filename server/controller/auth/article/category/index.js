@@ -26,16 +26,7 @@ module.exports = {
 	createCategory: async(ctx, next) => {
 		try {
 			const { title } = ctx.request.body
-			if (!title || !title.trim().length) {
-				ctx.body = {
-					code: 301,
-					errorMsg: {
-						message: "名称不能为空"
-					},
-					error: "名称不能为空",
-				}
-				return
-			}
+			await ctx.validateField(title, "名称不能为空")
 			const query = await articleService.createCategory(ctx, next)
 			ctx.body = {
 				...query,
@@ -65,16 +56,7 @@ module.exports = {
 	updateCategory: async(ctx, next) => {
 		try {
 			const { title } = ctx.request.body
-			if (!title || !title.trim().length) {
-				ctx.body = {
-					code: 301,
-					errorMsg: {
-						message: "名称不能为空"
-					},
-					error: "名称不能为空",
-				}
-				return
-			}
+			await ctx.validateField(title, "名称不能为空")
 			const query = await articleService.updateCategory(ctx, next)
 			ctx.body = {
 				...query,

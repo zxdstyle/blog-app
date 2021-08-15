@@ -3,6 +3,14 @@
 
 $contentPadding: 5;
 
+// theme color
+.theme-success {
+	color: $themeSuccess;
+}
+.theme-danger {
+	color: $themeDanger;
+}
+
 //App
 .blog-app-admin-view{
 	height: 100vh;

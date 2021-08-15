@@ -14,3 +14,28 @@ export class GetArticleListApi extends BaseRequestApi {
 		return "/api/auth/article/list"
 	}
 }
+
+export class CreateArticleApi extends BaseRequestApi {
+	url() {
+		return "/api/permission/article/create"
+	}
+
+	method() {
+		return "POST"
+	}
+}
+
+export class RemoveArticleApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	url() {
+		return `/api/permission/article/remove/${this.uuid}`
+	}
+
+	method() {
+		return "POST"
+	}
+}

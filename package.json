@@ -7,7 +7,7 @@
     "clear": "node ./build/webpack.clear.js",
     "webpack-dev": "cross-env NODE_ENV=development webpack-dev-server --config ./build/webpack.dev.js",
     "webpack-build": "cross-env NODE_ENV=production webpack --config ./build/webpack.prod.js",
-		"server-dev": "cross-env NODE_ENV=development nodemon ./server/server.js",
+    "server-dev": "cross-env NODE_ENV=development nodemon ./server/server.js",
     "server": "nodemon ./server/server.js",
     "dev": "concurrently -n Clear-Serve,Webpack-Serve,Server-Serve \"npm run clear\" \"npm run webpack-dev\" \"npm run server-dev\"",
     "build": "concurrently -n Clear-Serve,Webpack-Serve \"npm run clear\" \"npm run webpack-build\"",

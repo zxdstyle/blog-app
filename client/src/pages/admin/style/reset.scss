@@ -1,0 +1,19 @@
+.ant-page-header {
+	border: none;
+	padding: 10px 9px;
+}
+.ant-page-header-back {
+	margin: 0;
+}
+
+.ant-btn {
+	&.success-btn {
+		background-color: #27bb27;
+		border-color: #27bb27;
+		color: #fff;
+		&:hover {
+			background-color: #3bd23b;
+			border-color: #27bb27;
+		}
+	}
+}

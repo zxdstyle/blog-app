@@ -9,10 +9,11 @@
 const koaRouter = require("koa-router")
 const router = new koaRouter({ prefix: "/api/permission/article" })
 
-const cateController = require("../../../controller/auth/article/category")
+const articleController = require("../../../controller/auth/article")
 
 router
-	.post("/add", cateController.createCategory)
+	.post("/create", articleController.createArticle)
+	.post("/remove/:uuid", articleController.removeArticle)
 
 
 module.exports = router

@@ -22,4 +22,37 @@ module.exports = {
 			}
 		}
 	},
+	// 创建文章
+	createArticle: async (ctx, next) => {
+		try {
+			const { title, content, category, tags } = ctx.request.body
+			await ctx.validateField(title, "标题不能为空")
+			await ctx.validateField(content, "文章内容不能为空")
+			await ctx.validateField(category, "请选择文章分类")
+			await ctx.validateField(tags, "请选择文章标签")
+			const query = await articleService.createArticle(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+	},
+	removeArticle: async (ctx, next) => {
+		try {
+			const { uuid } = ctx.request.params
+			await ctx.validateField(uuid, "参数不能为空")
+			const query = await articleService.removeArticle(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+		
+	},
 }

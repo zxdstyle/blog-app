@@ -15,6 +15,7 @@ const koaView = require("koa-views")
 const { logger, accessLogger } = require("./log")
 const verifyAuth = require("./auth")
 const db = require("./mysql")
+const validateControl = require("./controller")
 const Mock = require("mockjs").mock
 const isDev = process.env.NODE_ENV === 'development'
 
@@ -55,6 +56,8 @@ module.exports = async (app, config) => {
 		allowHeaders: ["Content-Type", "Authorization", "Accept"],
 		exposeHeaders: ["WWW-Authenticate", "Server-Authorization"]
 	}))
+
+	app.use((ctx, next) => validateControl(ctx, next))
 
 	app.use((ctx, next) => verifyAuth(ctx, next))
 

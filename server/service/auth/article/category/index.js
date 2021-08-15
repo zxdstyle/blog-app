@@ -16,12 +16,16 @@ module.exports = {
 		try {
 			let queryMsg = {}
 			const { results } = await ctx.db(`
-				select * from category
+				select *,
+					(select count(*) from article where category.id=article.category_id) articles
+				from category
 				where title like '%${keyword}%'
 				limit ${page * limit},${limit}
 			`)
 			const { results: totalResults } = await ctx.db(`
-				select * from category
+				select *,
+					(select count(*) from article where category.id=article.category_id) articles
+				from category
 				where title like '%${keyword}%'
 			`)
 			queryMsg = {
@@ -98,6 +102,28 @@ module.exports = {
 					errorMsg: {
 						message: "删除失败，分类不存在"
 					},
+				}
+			} else if (results && results.length) {
+				const { results: hasCategoryArticles } = await ctx.db(`
+					select id from article where category_id=${id}
+				`)
+				if (hasCategoryArticles && hasCategoryArticles.length) {
+					queryMsg = {
+						code: 301,
+						success: false,
+						error: `删除失败，请先删除此分类 ${hasCategoryArticles.length} 篇文章`,
+						errorMsg: {
+							message: `删除失败，请先删除此分类 ${hasCategoryArticles.length} 篇文章`,
+						},
+					}
+				} else {
+					await ctx.db(`
+						delete from category where id=${id}
+					`)
+					queryMsg = {
+						code: 200,
+						success: true,
+					}
 				}
 			} else {
 				await ctx.db(`

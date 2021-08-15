@@ -48,6 +48,13 @@
 				</template>
 
 				<template
+					slot="articles"
+					slot-scope="text"
+				>
+					{{ text }}篇
+				</template>
+
+				<template
 					slot="createTime"
 					slot-scope="text, record"
 				>
@@ -111,6 +118,11 @@ function getColumns() {
 		{
 			title: "名称",
 			dataIndex: "title",
+		},
+		{
+			title: "所属文章",
+			dataIndex: "articles",
+			scopedSlots: { customRender: "articles" },
 		},
 		{
 			title: "创建时间",

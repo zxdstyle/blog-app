@@ -16,7 +16,9 @@ module.exports = {
 		try {
 			let queryMsg = {}
 			const { results } = await ctx.db(`
-				select * from tag
+				select *,
+				(select count(*) from article where find_in_set(tag.id, article.tag_ids)) articles
+				from tag
 				where title like '%${keyword}%'
 				limit ${page * limit},${limit}
 			`)
@@ -94,6 +96,28 @@ module.exports = {
 					errorMsg: {
 						message: "删除失败，标签不存在"
 					},
+				}
+			} else if (results && results.length) {
+				const { results: hasTagArticles } = await ctx.db(`
+					select id from article where find_in_set(${id}, tag_ids)
+				`)
+				if (hasTagArticles && hasTagArticles.length) {
+					queryMsg = {
+						code: 301,
+						success: false,
+						error: `删除失败，请先删除此标签 ${hasTagArticles.length} 篇文章`,
+						errorMsg: {
+							message: `删除失败，请先删除此标签 ${hasTagArticles.length} 篇文章`,
+						},
+					}
+				} else {
+					await ctx.db(`
+						delete from tag where id=${id}
+					`)
+					queryMsg = {
+						code: 200,
+						success: true,
+					}
 				}
 			} else {
 				await ctx.db(`

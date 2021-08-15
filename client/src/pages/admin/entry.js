@@ -5,6 +5,7 @@ import router from "@/pages/admin/router"
 import Antd from "@/lib/ant-design"
 import "@/style/init.scss"
 import "@/pages/admin/style/global.scss"
+import "@/pages/admin/style/reset.scss"
 
 import eventBus from "@/util/event-bus"
 

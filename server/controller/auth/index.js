@@ -40,39 +40,13 @@ module.exports = {
 		const { email, pwd, code } = ctx.request.body
 		const codeCookie = ctx.cookies.get(ctx.config.AUTH_CODE_COOKIE_NAME)
 
-		if (!code) {
-			ctx.body = {
-				code: 200,
-				error: "验证码不能为空",
-				errorMsg: {
-					message: "验证码不能为空",
-				}
-			}
-			return
-		}
-		if (!email || !pwd) {
-			ctx.body = {
-				code: 200,
-				error: "账号或密码不能为空",
-				errorMsg: {
-					message: "账号或密码不能为空",
-				}
-			}
-			return
-		}
-		if (MD5(code.toLowerCase()).toString() !== codeCookie) {
-			ctx.body = {
-				code: 200,
-				error: "验证码错误",
-				errorMsg: {
-					message: "验证码错误",
-				}
-			}
-			return
-		}
-
 		// query sql
 		try {
+			await ctx.validateField(code, "验证码不能为空")
+			await ctx.validateField(email, "账号不能为空")
+			await ctx.validateField(pwd, "密码不能为空")
+			await ctx.contrastField([MD5(code.toLowerCase()).toString(), codeCookie], "验证码错误")
+			
 			const query = await authService.userLogin(ctx, next)
 			if (query.success) {
 				const payload = query.model
@@ -95,7 +69,6 @@ module.exports = {
 				}
 			}
 		} catch (err) {
-			console.log(err)
 			ctx.body = {
 				...err,
 			}

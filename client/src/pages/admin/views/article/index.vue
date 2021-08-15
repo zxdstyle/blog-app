@@ -15,6 +15,18 @@
 						style="width: 120px"
 					/>
 				</a-form-item>
+
+				<a-form-item>
+					<a-select
+						v-decorator="['category',{
+							initialValue: undefined,
+						}]"
+						:options="categoryOptions"
+						placeholder="请选择分类..."
+						style="width: 120px"
+					/>
+				</a-form-item>
+
 				<a-form-item>
 					<a-input
 						v-decorator="['keyword',{
@@ -24,6 +36,7 @@
 						placeholder="关键字..."
 					/>
 				</a-form-item>
+
 				<a-button
 					type="primary"
 					html-type="submit"
@@ -32,10 +45,11 @@
 					搜索
 				</a-button>
 			</a-form>
+
 			<div class="filter-action">
 				<a-button
 					type="primary"
-					@click="() => $router.push({ name: 'createArticle' })"
+					@click="() => $router.push({ name: 'createArticle', query: { _t: +new Date } })"
 				>
 					新建文章
 				</a-button>
@@ -49,6 +63,45 @@
 				:loading="loading"
 				:pagination="pagination"
 			>
+				<template
+					slot="publish"
+					slot-scope="text"
+				>
+					<span
+						v-if="text"
+						class="theme-success"
+					>
+						已发布
+					</span>
+					<span
+						v-else
+						class="theme-danger"
+					>
+						未发布
+					</span>
+				</template>
+
+				<template
+					slot="tags"
+					slot-scope="text"
+				>
+					{{ text.map((t) => t.title).join(",") }}
+				</template>
+
+				<template
+					slot="createTime"
+					slot-scope="text"
+				>
+					{{ DateFormat("yyyy-MM-dd HH:mm", text) }}
+				</template>
+
+				<template
+					slot="updateTime"
+					slot-scope="text"
+				>
+					{{ DateFormat("yyyy-MM-dd HH:mm", text) }}
+				</template>
+
 				<template
 					slot="action"
 					slot-scope="text, record"
@@ -76,6 +129,8 @@
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex"
+import { getAfterActionPage } from "@/util"
+import DateFormat from "@/util/generic/date"
 
 const publishOptions = [
 	{
@@ -105,7 +160,7 @@ function getColumns() {
 		{
 			title: "简介",
 			dataIndex: "intro",
-			width: "15%"
+			width: "12%"
 		},
 		{
 			title: "关键字",
@@ -113,9 +168,21 @@ function getColumns() {
 			width: "10%"
 		},
 		{
+			title: "分类",
+			dataIndex: "category",
+			width: "8%"
+		},
+		{
+			title: "标签",
+			dataIndex: "tags",
+			width: "12%",
+			scopedSlots: { customRender: "tags" },
+		},
+		{
 			title: "已发布",
 			dataIndex: "publish",
-			width: "8%"
+			width: "8%",
+			scopedSlots: { customRender: "publish" },
 		},
 		{
 			title: "作者",
@@ -125,11 +192,17 @@ function getColumns() {
 		{
 			title: "创建时间",
 			dataIndex: "createTime",
-			width: "12%"
+			width: "10%",
+			scopedSlots: { customRender: "createTime" },
+		},
+		{
+			title: "更新时间",
+			dataIndex: "updateTime",
+			width: "10%",
+			scopedSlots: { customRender: "updateTime" },
 		},
 		{
 			title: "操作",
-			width: "15%",
 			scopedSlots: { customRender: "action" }
 		},
 	]
@@ -152,10 +225,25 @@ export default {
 			limit: (state) => state.article.limit,
 			total: (state) => state.article.total,
 			loading: (state) => state.article.loading,
+			categories: (state) => state.article.category.categories,
 		}),
 		...mapGetters({
 			totalPage: "article/totalPage",
 		}),
+		categoryOptions() {
+			return [
+				{
+					key: "all",
+					value: "",
+					label: "全部",
+				},
+				...this.categories.map((cate) => ({
+					key: cate.id,
+					value: cate.id,
+					label: cate.title,
+				})),
+			]
+		},
 		pagination() {
 			const self = this
 			return {
@@ -187,18 +275,30 @@ export default {
 
 	mounted() {
 		this.fetchArticleList()
+		this.fetchCategoryList({ page: 1, limit: 1000 })
 	},
 
 	methods: {
 		...mapActions({
 			fetchArticleList: "article/fetchArticleList",
+			removeArticle: "article/removeArticle",
+			fetchCategoryList: "article/category/fetchCategoryList",
 		}),
-		handleRemoveArticle({ id, title }) {
+		DateFormat,
+		handleRemoveArticle({ uuid, title }) {
+			const self = this
 			this.$confirm({
 				title: `您确定要删除 《${title}》 此文章吗？`,
 				okType: "danger",
 				onOk() {
-					console.log(id)
+					const loading = self.$message.loading("请稍后...", -1)
+					self.removeArticle({ uuid })
+						.then((res) => {
+							loading()
+							self.$message.success("删除成功!")
+							const page = getAfterActionPage(self.total, self.limit, self.page)
+							self.fetchArticleList({ page })
+						})
 				}
 			})
 		},

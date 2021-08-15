@@ -4,6 +4,8 @@
 
 import {
 	GetArticleListApi,
+	CreateArticleApi,
+	RemoveArticleApi,
 } from "@/api/article/article-api"
 import tag from "./tag"
 import category from "./category"
@@ -14,6 +16,7 @@ const state = {
 	filter: {
 		keyword: "",
 		publish: "",
+		category: "",
 	},
 	limit: 10,
 	page: 1,
@@ -77,6 +80,17 @@ const actions = {
 			commit("setLoading", false)
 			return error
 		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async createArticle({ commit }, payload) {
+		const api = new CreateArticleApi()
+		api.data = payload
+		return await api.send()
+	},
+	// eslint-disable-next-line no-unused-vars
+	async removeArticle({ commit }, payload) {
+		const api = new RemoveArticleApi({ uuid: payload.uuid })
+		return await api.send()
 	}
 }
 
