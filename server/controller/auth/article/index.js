@@ -40,6 +40,7 @@ module.exports = {
 			}
 		}
 	},
+	// 删除文章
 	removeArticle: async (ctx, next) => {
 		try {
 			const { uuid } = ctx.request.params
@@ -53,6 +54,20 @@ module.exports = {
 				...error,
 			}
 		}
-		
+	},
+	// 获取文章详情
+	getArticleDetail: async (ctx, next) => {
+		try {
+			const { uuid } = ctx.request.params
+			await ctx.validateField(uuid, "参数不能为空")
+			const query = await articleService.getArticleDetail(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
 	},
 }

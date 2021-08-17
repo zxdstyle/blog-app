@@ -39,3 +39,14 @@ export class RemoveArticleApi extends BaseRequestApi {
 		return "POST"
 	}
 }
+
+export class GetArticleDetail extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	url() {
+		return `/api/auth/article/detail/${this.uuid}`
+	}
+}

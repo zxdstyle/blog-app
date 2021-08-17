@@ -9,6 +9,66 @@
 const jwt = require("jsonwebtoken")
 
 module.exports = {
+	// 获取文章详情
+	getArticleDetail: async (ctx, next) => {
+		const { uuid } = ctx.request.params
+		try {
+			let queryMsg = {}
+			const { results } = await ctx.db(`
+				select id from article where uuid='${uuid}'
+			`)
+			if (results && results.length) {
+				const { results: curArticle } = await ctx.db(`
+					select art.id id, art.uuid uuid, art.title title, art.intro intro, art.content content,
+					art.keyword keyword, GROUP_CONCAT(t.title) tags, art.tag_ids tag_ids,
+					cate.title category, cate.id category_id,
+					u.username username, res.filename avatar,
+					art.publish publish, art.createTime createTime, art.updateTime updateTime
+					from article art
+					left join category cate on art.category_id=cate.id
+					left join (user u left JOIN resource res on u.avatar_id=res.id ) on art.user_id=u.id
+					LEFT JOIN tag t on FIND_IN_SET(t.id,art.tag_ids)
+					where art.uuid='${uuid}'
+					GROUP BY art.id
+				`)
+				const theArticle = curArticle[0]
+				const { tags, tag_ids } = theArticle
+				const tagTitles = (tags || []).split(",")
+				const tagIds = (tag_ids || []).split(",")
+				const tagList = []
+				tagTitles.forEach((t, i) => {
+						tagList.push({
+							id: Number(tagIds[i]),
+							title: t,
+						})
+					})
+				theArticle.tags = tagList
+				delete theArticle.tag_ids
+				queryMsg = {
+					message: "获取成功",
+					success: true,
+					model: theArticle,
+				}
+			} else {
+				queryMsg = {
+					model: null,
+					error: "文章不存在",
+					errorMsg: {
+						message: "文章不存在"
+					}
+				}
+			}
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
 	// 删除文章
 	removeArticle: async (ctx, next) => {
 		const { uuid } = ctx.request.params
@@ -65,12 +125,12 @@ module.exports = {
 				}
 			} else {
 				const tag_ids = tags.join(",")
-				await ctx.db(`
-					insert into article 
-					(uuid, user_id, title, intro, keyword, content, category_id, tag_ids, createTime) values
-					(UNIX_TIMESTAMP(), ${token.id}, '${title}', '${intro}', '${keyword || ''}', '${content}', ${category},
-					'${tag_ids}', NOW())
-				`)
+				await ctx.db(
+					`insert into article
+					(uuid, title, intro, keyword, content, user_id, category_id, tag_ids, createTime)
+					values(UNIX_TIMESTAMP(), ?, ?, ?, ?, ?, ?, ?, now())`,
+					[title, intro, keyword, content, token.id, category, tag_ids]
+				)
 				queryMsg = {
 					code: 200,
 					success: true,

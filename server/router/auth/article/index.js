@@ -14,6 +14,7 @@ const articleControl = require("../../../controller/auth/article")
 
 router
 	.get("/list", articleControl.getArticleList)
+	.get("/detail/:uuid", articleControl.getArticleDetail)
 
 
 module.exports = router

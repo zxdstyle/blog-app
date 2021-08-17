@@ -107,9 +107,9 @@
 					slot-scope="text, record"
 				>
 					<a
-						@click="() => $router.push({ name: 'articleDetail', params: { articleId: record.uuid } })"
+						@click="() => openDrawer(DRAWER_TYPE_MAP.VIEW_ARTICLE, record)"
 					>
-						详情
+						预览
 					</a>
 					<a
 						@click="() => $router.push({ name: 'articleEdit', params: { articleId: record.uuid } })"
@@ -124,13 +124,36 @@
 				</template>
 			</a-table>
 		</div>
+
+		<modal
+			:visible="drawerVisible"
+			:type="drawerType"
+			:title="DRAWER_TYPE_TITLE[drawerType]"
+			:width="900"
+			@close="closeDrawer"
+			@ok="handleSubmitDrawer"
+		>
+			<byte-view
+				v-if="drawerVisible && drawerType === DRAWER_TYPE_MAP.VIEW_ARTICLE"
+				:value="articleContent"
+			/>
+		</modal>
+
 	</div>
 </template>
 
 <script>
 import { mapState, mapActions, mapGetters } from "vuex"
 import { getAfterActionPage } from "@/util"
+import { GetArticleDetail } from "@api/article/article-api"
 import DateFormat from "@/util/generic/date"
+import { Viewer as ByteView} from "@/components/ByteMd/ByteMd"
+import Drawer from "@pages/admin/components/Drawer"
+import Modal from "@pages/admin/components/Modal"
+
+const DRAWER_TYPE_MAP = {
+	VIEW_ARTICLE: 'view_article',
+}
 
 const publishOptions = [
 	{
@@ -211,11 +234,28 @@ function getColumns() {
 export default {
 	name: "ArticleList",
 
+	components: {
+		Modal,
+		ByteView,
+		Drawer,
+	},
+
 	data() {
+		this.DRAWER_TYPE_MAP = DRAWER_TYPE_MAP
+		this.DRAWER_TYPE_TITLE = {
+			[DRAWER_TYPE_MAP.VIEW_ARTICLE]: "预览",
+		}
+		this.DRAWER_TYPE_API = {
+			[DRAWER_TYPE_MAP.VIEW_ARTICLE]: this.previewArticle,
+		}
 		this.publishOptions = publishOptions
 		this.columns = getColumns()
 		this.form = this.$form.createForm(this)
-		return {}
+		return {
+			articleContent: '222',
+			drawerVisible: false,
+			drawerType: null,
+		}
 	},
 
 	computed: {
@@ -275,7 +315,7 @@ export default {
 
 	mounted() {
 		this.fetchArticleList()
-		this.fetchCategoryList({ page: 1, limit: 1000 })
+		this.fetchCategoryList({ page: 1, limit: 1000, dontSyncPages: true })
 	},
 
 	methods: {
@@ -314,7 +354,40 @@ export default {
 					})
 				}
 			})
-		}
+		},
+		async previewArticle({ uuid }) {
+			const loading = this.$message.loading("加载中...", -1)
+			const api = new GetArticleDetail({ uuid })
+			try {
+				const { model } = await api.send()
+				if (model) {
+					const {
+						title,
+						content,
+					} = model
+					this.articleContent = content
+					this.visible = true
+				}
+			} finally {
+				loading()
+			}
+		},
+		handleSubmitDrawer(drawerType) {
+			console.log(drawerType)
+			this.closeDrawer()
+		},
+		async openDrawer(drawerType, record) {
+			const openDrawerApi = this.DRAWER_TYPE_API[drawerType]
+			if (openDrawerApi) {
+				await openDrawerApi(record)
+			}
+			this.drawerType = drawerType
+			this.drawerVisible = true
+		},
+		closeDrawer() {
+			this.drawerVisible = false
+			this.drawerType = null
+		},
 	},
 }
 </script>

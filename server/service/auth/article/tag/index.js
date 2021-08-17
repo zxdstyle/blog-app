@@ -22,11 +22,17 @@ module.exports = {
 				where title like '%${keyword}%'
 				limit ${page * limit},${limit}
 			`)
+			const { results: totalResult } = await ctx.db(`
+				select *,
+				(select count(*) from article where find_in_set(tag.id, article.tag_ids)) articles
+				from tag
+				where title like '%${keyword}%'
+			`)
 			queryMsg = {
 				code: 200,
 				success: true,
 				data: Array.from(results),
-				total: results.length,
+				total: totalResult.length,
 			}
 			return queryMsg
 		} catch (error) {

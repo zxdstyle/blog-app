@@ -42,15 +42,16 @@ const pool = mysql.createPool({
 	host: config.MYSQL_HOST,
 	user: config.MYSQL_USER,
 	password: config.MYSQL_PASSWORD,
-	database: config.MYSQL_DATABASE
+	database: config.MYSQL_DATABASE,
+	charset: "utf8mb4",
 })
 
 
-const query = sql => {
+const query = (...sql) => {
 	return new Promise((resolve, reject) => {
 		pool.getConnection((err, conn) => {
 			if (err) reject(err)
-			conn.query(sql, (error, results, fields) => {
+			conn.query(...sql, (error, results, fields) => {
 				if (error) reject(error)
 				resolve({ results, fields })
 				conn.release()
