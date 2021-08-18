@@ -109,6 +109,7 @@ export const menuRoutes = [
 		name: "music",
 		key: "music",
 		showMenu: true,
+		component: () => import("@/pages/admin/views/music/view"),
 		meta: {},
 		children: [
 			{
@@ -117,6 +118,7 @@ export const menuRoutes = [
 				name: "musicList",
 				key: "musicList",
 				showMenu: true,
+				component: () => import("@/pages/admin/views/music/index"),
 				meta: {},
 			},
 		],

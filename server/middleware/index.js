@@ -10,6 +10,7 @@ const fs = require("fs")
 const path = require("path")
 const koaStatic = require("koa-static")
 const bodyParser = require("koa-bodyparser")
+const koaBody = require("koa-body")
 const cors = require("koa2-cors")
 const koaView = require("koa-views")
 const { logger, accessLogger } = require("./log")
@@ -45,6 +46,10 @@ module.exports = async (app, config) => {
 		ctx.Mock = Mock
 		await next()
 	})
+
+	app.use(koaBody({
+		multipart: true
+	}))
 
 	app.use(bodyParser())
 

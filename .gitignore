@@ -1,6 +1,7 @@
 node_modules
 dist
 server/public/*
+server/static/upload/*
 !server/public/favicon.ico
 server/logs
 
