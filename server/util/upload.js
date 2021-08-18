@@ -14,9 +14,9 @@ const resolve = (...p) => path.resolve(__dirname, ...p)
 const getFileExt = (fileName) => {
 	const extReg = /(\.[^.]+)$/
 	extReg.test(fileName)
-	const ext = RegExp.$1
+	const ext = `${RegExp.$1}`
 	extReg.lastIndex = 0
-	return ext
+	return ext.toString().toLowerCase()
 }
 
 const STATIC_DIR = resolve("../static")
@@ -40,7 +40,7 @@ const UPLOAD_FILE_TYPE_HTTP_PREFIX = {
 	[UPLOAD_FILE_TYPES.MUSIC]: "/upload/music/",
 }
 
-const handleUpload = async (ctx, file, fileType) => {
+const handleUploadFile = async (ctx, file, fileType) => {
 	try {
 		const { path: FilePath, name: FileName, size: FileSize } = file
 		const FileExt = await getFileExt(FileName)
@@ -94,8 +94,26 @@ const getFileHttpURL = (ctx, fileName, fileType) => {
 	return ctx.isDev ? `${ctx.protocol}://${ctx.host}${serverStorePath}` : serverStorePath
 }
 
+const handleRemoveFile = async (ctx, fileName, fileType) => {
+	try {
+		const removeFileDir = resolve(UPLOAD_FILE_PUBLIC_DIR, UPLOAD_FILE_TYPE_DIR_PREFIX[fileType], fileName)
+		await fs.unlinkSync(removeFileDir)
+		ctx.isDev ? console.log(`文件删除成功:${fileName}`) : null
+	} catch (error) {
+		throw {
+			...error,
+			error: "服务器错误,文件删除失败",
+			errorMsg: {
+				message: error.message,
+				...error,
+			},
+		}
+	}
+}
+
 module.exports = {
-	handleUpload,
+	handleUploadFile,
+	handleRemoveFile,
 	getFileHttpURL,
 	UPLOAD_FILE_TYPES,
 }

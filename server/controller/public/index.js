@@ -13,8 +13,9 @@ module.exports = {
 	uploadFile: async (ctx, next) => {
 		try {
 			const { FILE_TYPE } = ctx.request.body
-			const { file } = ctx.request.files
 			await ctx.validateField(FILE_TYPE, "FILE_TYPE参数不能为空")
+			await ctx.validateField(ctx.request.files, "上传文件不能为空")
+			const { file } = ctx.request.files
 			await ctx.validateField(file, "上传文件不能为空")
 			const query = await publicService.uploadFile(ctx, next)
 			ctx.body = {

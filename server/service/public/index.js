@@ -6,7 +6,7 @@
  *  Copyright (c) 2017-present github.com/Peachick. All rights reserved.
  */
 
-const { handleUpload, getFileHttpURL } = require("../../util/upload")
+const { handleUploadFile, getFileHttpURL, handleRemoveFile } = require("../../util/upload")
 
 module.exports = {
 	uploadFile: async (ctx, next) => {
@@ -14,7 +14,7 @@ module.exports = {
 			let queryMsg = {}
 			const { FILE_TYPE } = ctx.request.body
 			const { file } = ctx.request.files
-			const { name, ext, size, type, originName } = await handleUpload(ctx, file, FILE_TYPE)
+			const { name, ext, size, type, originName } = await handleUploadFile(ctx, file, FILE_TYPE)
 			const { results } = await ctx.db(
 				'insert into resource (type, filename, origin_name, ext, size, createTime) values (?,?,?,?,?,now())',
 				[type, name, originName, ext, size]
@@ -33,6 +33,7 @@ module.exports = {
 				success: true,
 				message: "上传成功",
 			}
+			// await handleRemoveFile(ctx, name, type)
 			return queryMsg
 		} catch (error) {
 			return {
