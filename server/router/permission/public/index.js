@@ -13,6 +13,7 @@ const publicController = require("../../../controller/public")
 
 router
 	.post("/upload", publicController.uploadFile) // 上传文件
+	.post("/remove-file/:uuid", publicController.removeFile) // 删除文件
 
 
 module.exports = router

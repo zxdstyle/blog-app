@@ -15,9 +15,25 @@ module.exports = {
 			const { FILE_TYPE } = ctx.request.body
 			await ctx.validateField(FILE_TYPE, "FILE_TYPE参数不能为空")
 			await ctx.validateField(ctx.request.files, "上传文件不能为空")
-			const { file } = ctx.request.files
-			await ctx.validateField(file, "上传文件不能为空")
+			const { filedata } = ctx.request.files
+			await ctx.contrastField([filedata], "上传文件不能为空", (file) => file.size > 0)
 			const query = await publicService.uploadFile(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+	},
+	// 删除文件
+	removeFile: async (ctx, next) => {
+		try {
+			const { uuid } = ctx.request.params
+			await ctx.validateField(uuid, "资源id不能为空")
+			await ctx.contrastField(uuid, "资源id错误", () => !isNaN(Number(uuid)))
+			const query = await publicService.removeFile(ctx, next)
 			ctx.body = {
 				...query,
 			}

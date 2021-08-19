@@ -37,6 +37,20 @@ module.exports = async (ctx, next) => {
 						throw error
 					}
 				}
+				if (validateType(field, "Object")) {
+					if(!Object.keys(field).length) {
+						const error = new Error(errorMsg)
+						error.code = 401
+						error.errorMsg = {
+							message: errorMsg
+						}
+						error.error = errorMsg
+						if (cb && validateType(cb, "Function")) {
+							await cb(error)
+						}
+						throw error
+					}
+				}
 			}
 		} catch (err) {
 			throw err

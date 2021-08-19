@@ -25,19 +25,25 @@ const UPLOAD_FILE_PUBLIC_DIR = resolve("../static/upload")
 const UPLOAD_FILE_TYPES = {
 	DEFAULT: "DEFAULT", // 普通文件
 	IMAGE: "IMAGE", // 图片
-	MUSIC: "MUSIC", // 歌曲
+	VOICE: "VOICE", // 歌曲
+	VIDEO: "VIDEO", // 视频
+	DOCUMENT: "DOCUMENT", // 文档
 }
 
 const UPLOAD_FILE_TYPE_DIR_PREFIX = {
 	[UPLOAD_FILE_TYPES.DEFAULT]: "",
 	[UPLOAD_FILE_TYPES.IMAGE]: "./img",
-	[UPLOAD_FILE_TYPES.MUSIC]: "./music",
+	[UPLOAD_FILE_TYPES.VOICE]: "./voice",
+	[UPLOAD_FILE_TYPES.VIDEO]: "./video",
+	[UPLOAD_FILE_TYPES.DOCUMENT]: "./document",
 }
 
 const UPLOAD_FILE_TYPE_HTTP_PREFIX = {
 	[UPLOAD_FILE_TYPES.DEFAULT]: "/upload/",
 	[UPLOAD_FILE_TYPES.IMAGE]: "/upload/img/",
-	[UPLOAD_FILE_TYPES.MUSIC]: "/upload/music/",
+	[UPLOAD_FILE_TYPES.VOICE]: "/upload/voice/",
+	[UPLOAD_FILE_TYPES.VIDEO]: "/upload/video/",
+	[UPLOAD_FILE_TYPES.DOCUMENT]: "/upload/document/",
 }
 
 const handleUploadFile = async (ctx, file, fileType) => {

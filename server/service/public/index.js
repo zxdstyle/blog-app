@@ -9,14 +9,15 @@
 const { handleUploadFile, getFileHttpURL, handleRemoveFile } = require("../../util/upload")
 
 module.exports = {
+	// 上传文件
 	uploadFile: async (ctx, next) => {
 		try {
 			let queryMsg = {}
 			const { FILE_TYPE } = ctx.request.body
-			const { file } = ctx.request.files
-			const { name, ext, size, type, originName } = await handleUploadFile(ctx, file, FILE_TYPE)
+			const { filedata } = ctx.request.files
+			const { name, ext, size, type, originName } = await handleUploadFile(ctx, filedata, FILE_TYPE)
 			const { results } = await ctx.db(
-				'insert into resource (type, filename, origin_name, ext, size, createTime) values (?,?,?,?,?,now())',
+				'insert into resource (uuid, type, filename, origin_name, ext, size, createTime) values (UNIX_TIMESTAMP(),?,?,?,?,?,now())',
 				[type, name, originName, ext, size]
 			)
 			const { insertId } = results
@@ -33,7 +34,40 @@ module.exports = {
 				success: true,
 				message: "上传成功",
 			}
-			// await handleRemoveFile(ctx, name, type)
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				...error,
+			}
+		}
+	},
+	removeFile: async (ctx, next) => {
+		try {
+			let queryMsg = {}
+			const { uuid } = ctx.request.params
+			const { results: hasExist } = await ctx.db(`
+				select * from resource where uuid='${uuid}'
+			`)
+			if (hasExist && !hasExist.length) {
+				queryMsg = {
+					error: "删除失败,资源不存在",
+					errorMsg: {
+						message: "删除失败,资源不存在",
+					},
+				}
+			} else {
+				const { type, filename } = hasExist[0]
+				await handleRemoveFile(ctx, filename, type)
+				await ctx.db(`delete from resource where uuid='${uuid}'`)
+				queryMsg = {
+					success: true,
+					message: "删除成功"
+				}
+			}
 			return queryMsg
 		} catch (error) {
 			return {
