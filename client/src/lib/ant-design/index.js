@@ -15,6 +15,7 @@ import {
 	Form,
 	Select,
 	Drawer,
+	Upload,
 	PageHeader,
 	ConfigProvider,
 } from "ant-design-vue"
@@ -36,6 +37,7 @@ const components = [
 	Form,
 	Select,
 	Drawer,
+	Upload,
 	PageHeader,
 	ConfigProvider,
 ]

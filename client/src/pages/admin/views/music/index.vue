@@ -1,18 +1,105 @@
 <template>
 	<div class="blog-panel">
 		<div class="panel-filter">
+			<a-form
+				:form="form"
+				@submit="handleSearch"
+				class="panel-filter-form"
+			>
+
+				<a-form-item>
+					<a-input
+						v-decorator="['keyword',{
+							initialValue: '',
+						}]"
+						allowClear
+						placeholder="关键字..."
+					/>
+				</a-form-item>
+
+				<a-button
+					type="primary"
+					html-type="submit"
+					:loading="loading"
+				>
+					搜索
+				</a-button>
+			</a-form>
+
+			<div class="filter-action">
+				<a-button
+					type="primary"
+					@click="openDrawer(DRAWER_TYPE.CREATE_MUSIC)"
+				>
+					新建歌曲
+				</a-button>
+			</div>
 		</div>
 		<div class="panel-body">
 			<a-table
+				:row-key="row => row.id"
 				:columns="columns"
+				:data-source="dataSource"
+				:loading="loading"
+				:pagination="pagination"
 			>
+				<template
+					slot="number"
+					slot-scope="text, record, index"
+				>
+					{{ (page - 1) * limit + index + 1 }}
+				</template>
+
+				<template
+					slot="createTime"
+					slot-scope="text"
+				>
+					{{ DateFormat("yyyy-MM-dd HH:mm", text) }}
+				</template>
+
+				<template
+					slot="action"
+					slot-scope="text, record"
+				>
+					<a
+						@click="() => true"
+					>
+						编辑
+					</a>
+					<a
+						@click="() => true"
+					>
+						删除
+					</a>
+				</template>
 			</a-table>
 		</div>
+
+		<drawer
+			:visible="visible"
+			:title="drawerTitle"
+			@submit="handleSubmitDrawer"
+			@close="closeDrawer"
+		>
+			<create-from
+				v-if="drawerType === DRAWER_TYPE.CREATE_MUSIC"
+				:form-data="formData"
+				:loading="loadingSubmit"
+			/>
+		</drawer>
 	</div>
 </template>
 
 <script>
-import { mapActions } from "vuex"
+import { mapActions, mapGetters, mapState } from "vuex"
+import DateFormat from "@/util/generic/date"
+import Drawer from "@pages/admin/components/Drawer"
+import CreateFrom from "./createForm"
+
+const DRAWER_TYPE = {
+	EDIT_MUSIC: 'edit_music',
+	CREATE_MUSIC: 'create_music',
+}
 
 function getColumns() {
 	return [
@@ -32,15 +119,85 @@ function getColumns() {
 			title: "封面",
 			dataIndex: "poster",
 		},
+		{
+			title: "创建时间",
+			dataIndex: "createTime",
+			scopedSlots: { customRender: "createTime" },
+		},
+		{
+			title: "操作",
+			scopedSlots: { customRender: "action" },
+		},
 	]
 }
 
 export default {
 	name: "MusicList",
 
+	components: {
+		Drawer,
+		CreateFrom,
+	},
+
 	data() {
+		this.DRAWER_TYPE = DRAWER_TYPE
+		this.DRAWER_TITLE = {
+			[DRAWER_TYPE.EDIT_MUSIC]: "编辑歌曲",
+			[DRAWER_TYPE.CREATE_MUSIC]: "新建歌曲",
+		}
+		this.DRAWER_API = {
+			[DRAWER_TYPE.EDIT_MUSIC]: true,
+			[DRAWER_TYPE.CREATE_MUSIC]: this.handleCreateMusic,
+		}
 		this.columns = getColumns()
-		return {}
+		this.form = this.$form.createForm(this)
+		return {
+			visible: false,
+			drawerType: '',
+			drawerTitle: '',
+			loadingSubmit: false,
+			formData: {},
+		}
+	},
+
+	computed: {
+		...mapState({
+			dataSource: (state) => state.music.musicList,
+			page: (state) => state.music.page,
+			limit: (state) => state.music.limit,
+			total: (state) => state.music.total,
+			loading: (state) => state.music.loading,
+		}),
+		...mapGetters({
+			totalPage: "music/totalPage",
+		}),
+		pagination() {
+			const self = this
+			return {
+				showQuickJumper: self.totalPage > 1,
+				showSizeChanger: true,
+				// hideOnSinglePage: true,
+				current: self.page,
+				pageSize: self.limit,
+				total: self.total || 0,
+				pageSizeOptions: ["10", "20", "30", "50"],
+				showTotal: (total, range) => {
+					return `共 ${self.totalPage} 页, ${total} 条数据`
+				},
+				onChange: (page, pageSize) => {
+					self.fetchArticleList({
+						page,
+						limit: pageSize,
+					})
+				},
+				onShowSizeChange: (current, size) => {
+					self.fetchArticleList({
+						page: current,
+						limit: size,
+					})
+				},
+			}
+		},
 	},
 
 	mounted() {
@@ -51,7 +208,53 @@ export default {
 		...mapActions({
 			fetchMusicList: "music/fetchMusicList",
 		}),
-	}
+
+		DateFormat,
+		handleSearch(e) {
+			e.preventDefault()
+			this.form.validateFields((err, values) => {
+				if (!err) {
+					this.fetchMusicList({
+						page: 1,
+						filter: {
+							...values,
+						}
+					})
+				}
+			})
+		},
+		handleCreateMusic(formData) {
+			this.loadingSubmit = true
+			const loading = this.$message.loading("请稍后...", -1)
+			this.createTag(formData)
+				.then(() => {
+					this.loadingSubmit = false
+					loading()
+					this.$message.success("添加成功!")
+					this.closeDrawer();
+					this.fetchTagList();
+				})
+				.catch(() => {
+					this.loadingSubmit = false
+				})
+		},
+		handleSubmitDrawer(formData) {
+			this.DRAWER_API[this.drawerType](formData)
+		},
+		openDrawer(drawerType, record) {
+			if (record) {
+				this.formData = record
+			}
+			this.visible = true
+			this.drawerType = drawerType
+			this.drawerTitle = this.DRAWER_TITLE[drawerType]
+		},
+		closeDrawer() {
+			this.visible = false
+			this.drawerTitle = ""
+			this.formData = {}
+		},
+	},
 }
 </script>
 

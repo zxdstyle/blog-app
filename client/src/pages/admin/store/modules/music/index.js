@@ -68,6 +68,7 @@ const actions = {
 			}
 			const { data, total } = await api.send()
 			commit("setLoading", false)
+			console.log(data)
 			commit("setMusicList", data)
 			commit("setTotal", total)
 		} catch (error) {

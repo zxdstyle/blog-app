@@ -21,6 +21,7 @@ module.exports = {
 				[type, name, originName, ext, size]
 			)
 			const { insertId } = results
+			const { results: createFile } = await ctx.db(`select * from resource where id=${insertId}`)
 			queryMsg = {
 				model: {
 					id: insertId,
@@ -30,6 +31,7 @@ module.exports = {
 					size,
 					type,
 					origin_name: originName,
+					uuid: createFile[0].uuid,
 				},
 				success: true,
 				message: "上传成功",

@@ -252,7 +252,7 @@ export default {
 		this.columns = getColumns()
 		this.form = this.$form.createForm(this)
 		return {
-			articleContent: '222',
+			articleContent: '',
 			drawerVisible: false,
 			drawerType: null,
 		}

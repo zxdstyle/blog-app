@@ -22,3 +22,18 @@ export function getAfterActionPage(total, limit, page) {
 		? total - 1 > (page - 1) * limit ? page : page - 1
 		: 1
 }
+
+export const getFileExt = (fileName) => {
+	const extReg = /(\.[^.]+)$/
+	extReg.test(fileName)
+	const ext = `${RegExp.$1}`
+	extReg.lastIndex = 0
+	return ext.toString().toLowerCase()
+}
+
+export function isCorrectType(supportedType, targetType) {
+	if (Array.isArray(supportedType)) {
+		return supportedType.filter((type) => type.toLowerCase() === targetType.toLowerCase()).length > 0
+	}
+	return supportedType.toLowerCase() === targetType.toLowerCase()
+}

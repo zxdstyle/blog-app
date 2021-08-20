@@ -17,7 +17,7 @@ module.exports = {
 			keyword = keyword || ""
 			const { results } = await ctx.db(`
 				SELECT  m.id id, m.title title, m.singer singer, res.filename url, m.uuid uuid,
-				res1.id poster_id, res1.filename poster
+				res1.id poster_id, res1.filename poster, m.createTime createTime
 				from music m
 				LEFT JOIN resource res on m.url_id=res.id
 				LEFT JOIN resource res1 on m.poster_id=res1.id
