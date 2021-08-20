@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+				content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+	<meta http-equiv="X-UA-Compatible" content="ie=edge">
+	<meta name="referrer" content="same-origin">
+	<title>{{ title }}</title>
+	<link rel="stylesheet" href="/css/soul.css">
+</head>
+<body>
+	<img class="not-found-bg" src="http://ww1.sinaimg.cn/large/005HV6Avgy1gtn465vs1sg60m80go4qp02.gif" alt="">
+	<!--vue-ssr-outlet-->
+	<script>
+		document.querySelector(".not-found-bg").addEventListener("click", () => {
+			window.location.href = "/"
+		})
+	</script>
+</body>
+</html>
+

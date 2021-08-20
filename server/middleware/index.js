@@ -12,7 +12,6 @@ const koaStatic = require("koa-static")
 const bodyParser = require("koa-bodyparser")
 const koaBody = require("koa-body")
 const cors = require("koa2-cors")
-const koaView = require("koa-views")
 const { logger, accessLogger } = require("./log")
 const verifyAuth = require("./auth")
 const db = require("./mysql")
@@ -26,8 +25,6 @@ module.exports = async (app, config) => {
 	app.on("error", error => {
 		logger.error(error)
 	})
-
-	app.use(koaView(path.resolve(__dirname, "../template/"), { extension: "pug" }))
 
 	app.use(async (ctx, next) => {
 		ctx.config = config
