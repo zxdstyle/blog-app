@@ -6,6 +6,8 @@
  *  Copyright (c) 2017-present github.com/Peachick. All rights reserved.
  */
 
+const { getFileHttpURL, handleRemoveFile } = require("../../util/upload")
+
 module.exports = {
 	// 后台查询歌曲
 	getMusicByPage: async (ctx, next) => {
@@ -16,14 +18,26 @@ module.exports = {
 			page = page ? page - 1 : 0
 			keyword = keyword || ""
 			const { results } = await ctx.db(`
-				SELECT  m.id id, m.title title, m.singer singer, res.filename url, m.uuid uuid,
-				res1.id poster_id, res1.filename poster, m.createTime createTime
+				SELECT
+				m.id id, m.title title, m.singer singer, m.uuid uuid,
+				res.filename url, res.type url_type, res.id url_id, res.uuid url_uuid, res.filename url_name, res.origin_name url_title,
+				res1.filename poster, res1.type poster_type, res1.id poster_id, res1.uuid poster_uuid, res1.filename poster_name, res1.origin_name poster_title,
+				m.createTime createTime
 				from music m
 				LEFT JOIN resource res on m.url_id=res.id
 				LEFT JOIN resource res1 on m.poster_id=res1.id
 				where title like '%${keyword}%' or singer like '%${keyword}%'
 				limit ${page * limit},${limit}
 			`)
+			const temp = Array.from(results)
+			const dataList = temp.map((m) => {
+				const model = {
+					...m,
+					url: getFileHttpURL(ctx, m.url, m.url_type),
+					poster: getFileHttpURL(ctx, m.poster, m.poster_type)
+				}
+				return model
+			})
 			const { results: totalResult } = await ctx.db(`
 				SELECT * from music m
 				LEFT JOIN resource res on m.url_id=res.id
@@ -33,7 +47,7 @@ module.exports = {
 			queryMsg = {
 				message: "获取成功",
 				success: true,
-				data: Array.from(results),
+				data: dataList,
 				total: totalResult.length,
 			}
 			return queryMsg
@@ -91,7 +105,13 @@ module.exports = {
 			let queryMsg = {}
 			const { uuid } = ctx.request.params
 			const { results: hasExist } = await ctx.db(`
-				select * from music where uuid='${uuid}'
+				SELECT  m.uuid uuid,
+				res.filename url, res.type url_type, res.id url_id,
+				res1.filename poster, res1.type poster_type, res1.id poster_id
+				from music m
+				LEFT JOIN resource res on m.url_id=res.id
+				LEFT JOIN resource res1 on m.poster_id=res1.id
+				where m.uuid='${uuid}'
 			`)
 			if (hasExist && !hasExist.length) {
 				queryMsg = {
@@ -103,9 +123,23 @@ module.exports = {
 					success: false,
 				}
 			} else {
+				const deleteMusic = hasExist[0]
+				const {
+					url,
+					url_type,
+					url_id,
+					poster,
+					poster_type,
+					poster_id,
+				} = deleteMusic
 				await ctx.db(`
 					delete from music where uuid='${uuid}'
 				`)
+				await ctx.db(`
+					delete from resource where id=${url_id} or id=${poster_id}
+				`)
+				await handleRemoveFile(ctx, url, url_type)
+				await handleRemoveFile(ctx, poster, poster_type)
 				queryMsg = {
 					message: "删除成功",
 					success: true,

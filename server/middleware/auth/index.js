@@ -53,7 +53,10 @@ module.exports = async (ctx, next) => {
 			if (ctx.isDev) {
 				ctx.status = 401
 				ctx.body = {
-					error,
+					...error,
+					error: "FAIL TOKEN AUTHORIZATION",
+					name: "AUTHORIZATION",
+					message: "FAIL TOKEN AUTHORIZATION",
 					code: 401,
 					errorMsg: {
 						message: "请先登录...",

@@ -11,6 +11,46 @@ import BaseRequestApi from "@api/api-class/base-request-api"
 
 export class GetMusicListApi extends BaseRequestApi {
 	url() {
-		return "/api/music/list"
+		return "/api/permission/music/list"
+	}
+}
+
+export class CreateMusicApi extends BaseRequestApi {
+	url() {
+		return "/api/permission/music/create"
+	}
+
+	method() {
+		return "POST"
+	}
+}
+
+export class RemoveMusicApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	url() {
+		return `/api/permission/music/remove/${this.uuid}`
+	}
+
+	method() {
+		return "POST"
+	}
+}
+
+export class UpdateMusicApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	url() {
+		return `/api/permission/music/update/${this.uuid}`
+	}
+
+	method() {
+		return "POST"
 	}
 }

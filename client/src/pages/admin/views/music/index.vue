@@ -58,16 +58,23 @@
 				</template>
 
 				<template
+					slot="poster"
+					slot-scope="text"
+				>
+					<img :src="text" width="80" height="80">
+				</template>
+
+				<template
 					slot="action"
 					slot-scope="text, record"
 				>
 					<a
-						@click="() => true"
+						@click="() => openDrawer(DRAWER_TYPE.EDIT_MUSIC, record)"
 					>
 						编辑
 					</a>
 					<a
-						@click="() => true"
+						@click="() => handleRemoveMusic(record)"
 					>
 						删除
 					</a>
@@ -81,8 +88,13 @@
 			@submit="handleSubmitDrawer"
 			@close="closeDrawer"
 		>
-			<create-from
+			<create-music-form
 				v-if="drawerType === DRAWER_TYPE.CREATE_MUSIC"
+				:form-data="formData"
+				:loading="loadingSubmit"
+			/>
+			<edit-music-form
+				v-if="drawerType === DRAWER_TYPE.EDIT_MUSIC"
 				:form-data="formData"
 				:loading="loadingSubmit"
 			/>
@@ -94,7 +106,10 @@
 import { mapActions, mapGetters, mapState } from "vuex"
 import DateFormat from "@/util/generic/date"
 import Drawer from "@pages/admin/components/Drawer"
-import CreateFrom from "./createForm"
+import { getAfterActionPage } from "@/util"
+
+const CreateMusicForm = () => import(/*webpackChunkName:"CreateMusicForm"*/ "./createForm")
+const EditMusicForm = () => import(/*webpackChunkName:"EditMusicForm"*/ "./editForm")
 
 const DRAWER_TYPE = {
 	EDIT_MUSIC: 'edit_music',
@@ -118,6 +133,7 @@ function getColumns() {
 		{
 			title: "封面",
 			dataIndex: "poster",
+			scopedSlots: { customRender: "poster" },
 		},
 		{
 			title: "创建时间",
@@ -136,7 +152,8 @@ export default {
 
 	components: {
 		Drawer,
-		CreateFrom,
+		CreateMusicForm,
+		EditMusicForm,
 	},
 
 	data() {
@@ -146,7 +163,7 @@ export default {
 			[DRAWER_TYPE.CREATE_MUSIC]: "新建歌曲",
 		}
 		this.DRAWER_API = {
-			[DRAWER_TYPE.EDIT_MUSIC]: true,
+			[DRAWER_TYPE.EDIT_MUSIC]: this.handleUpdateMusic,
 			[DRAWER_TYPE.CREATE_MUSIC]: this.handleCreateMusic,
 		}
 		this.columns = getColumns()
@@ -185,13 +202,13 @@ export default {
 					return `共 ${self.totalPage} 页, ${total} 条数据`
 				},
 				onChange: (page, pageSize) => {
-					self.fetchArticleList({
+					self.fetchMusicList({
 						page,
 						limit: pageSize,
 					})
 				},
 				onShowSizeChange: (current, size) => {
-					self.fetchArticleList({
+					self.fetchMusicList({
 						page: current,
 						limit: size,
 					})
@@ -207,6 +224,9 @@ export default {
 	methods: {
 		...mapActions({
 			fetchMusicList: "music/fetchMusicList",
+			createMusic: "music/createMusic",
+			removeMusic: "music/removeMusic",
+			updateMusic: "music/updateMusic",
 		}),
 
 		DateFormat,
@@ -226,20 +246,64 @@ export default {
 		handleCreateMusic(formData) {
 			this.loadingSubmit = true
 			const loading = this.$message.loading("请稍后...", -1)
-			this.createTag(formData)
-				.then(() => {
+			this.createMusic(formData)
+				.then(({ success }) => {
+					if (success) {
+						this.$message.success("添加成功!")
+						this.fetchMusicList();
+						this.closeDrawer();
+					}
 					this.loadingSubmit = false
 					loading()
-					this.$message.success("添加成功!")
-					this.closeDrawer();
-					this.fetchTagList();
 				})
 				.catch(() => {
 					this.loadingSubmit = false
 				})
 		},
-		handleSubmitDrawer(formData) {
-			this.DRAWER_API[this.drawerType](formData)
+		handleUpdateMusic(formData, uuid) {
+			this.loadingSubmit = true
+			const loading = this.$message.loading("请稍后...", -1)
+			const payload = {
+				formData,
+				uuid,
+			}
+			this.updateMusic(payload)
+				.then(({ success }) => {
+					if (success) {
+						this.$message.success("更新成功!")
+						this.fetchMusicList();
+						this.closeDrawer();
+					}
+					this.loadingSubmit = false
+					loading()
+				})
+				.catch(() => {
+					this.loadingSubmit = false
+				})
+		},
+		handleSubmitDrawer(formData, ...args) {
+			this.DRAWER_API[this.drawerType](formData, ...args)
+		},
+		handleRemoveMusic({ uuid }) {
+			const self = this
+			this.$confirm({
+				title: "此操作不可撤销，是否继续?",
+				okType: "danger",
+				onOk() {
+					const loading = self.$message.loading("请稍后...", -1)
+					const page = getAfterActionPage(self.total, self.limit, self.page)
+					self.removeMusic({ uuid })
+						.then(({ success }) => {
+							if (success) {
+								self.$message.success("删除成功")
+								self.fetchMusicList({ page })
+							}
+						})
+						.finally(() => {
+							loading()
+						})
+				}
+			})
 		},
 		openDrawer(drawerType, record) {
 			if (record) {

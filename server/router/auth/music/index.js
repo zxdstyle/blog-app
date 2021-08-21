@@ -12,7 +12,6 @@ const router = new koaRouter({ prefix: "/api/music" })
 const musicController = require("../../../controller/music")
 
 router
-	.get("/list", musicController.getMusicByPage)
 	.get("/all", musicController.getAllMusic)
 
 

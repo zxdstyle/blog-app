@@ -17,6 +17,13 @@ export function getRedirectUrl(name){
 	return url ? url[2] : "/"
 }
 
+/**
+ * 计算删除后，列表需要获取的当前page
+ * @param total
+ * @param limit
+ * @param page
+ * @returns {*|number|number}
+ */
 export function getAfterActionPage(total, limit, page) {
 	return page > 1
 		? total - 1 > (page - 1) * limit ? page : page - 1

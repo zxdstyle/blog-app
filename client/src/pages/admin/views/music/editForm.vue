@@ -125,11 +125,6 @@
 
 		<div class="drawer-bottom-elem">
 			<a-button
-				@click="() => emitClose()"
-			>
-				取消
-			</a-button>
-			<a-button
 				type="primary"
 				html-type="submit"
 				:loading="loading"
@@ -153,7 +148,7 @@ const supportPosterSize = 1024 * 1024 * 5
 let musicPlayer
 
 export default {
-	name: "createForm",
+	name: "EditForm",
 
 	inject: ["emitClose", "emitSubmit"],
 
@@ -161,6 +156,10 @@ export default {
 		loading: {
 			type: Boolean,
 			default: false,
+		},
+		formData: {
+			type: Object,
+			default: () => {},
 		},
 	},
 
@@ -170,6 +169,7 @@ export default {
 			playing: false,
 			loadedMusic: false,
 			uploadingMusic: false,
+			musicuuid: null,
 			uploadMusic: {
 				url: null,
 				title: "",
@@ -186,6 +186,10 @@ export default {
 				uuid: null,
 			},
 		}
+	},
+
+	mounted() {
+		this.initForm()
 	},
 
 	methods: {
@@ -283,15 +287,13 @@ export default {
 					return
 				}
 				if (!err) {
+					musicPlayer ? document.body.removeChild(musicPlayer) : null
 					const formData = {
 						...values,
-						url: this.uploadMusic.id,
-						poster: this.uploadPoster.id,
+						url_id: this.uploadMusic.id,
+						poster_id: this.uploadPoster.id,
 					}
-					musicPlayer ? document.body.removeChild(musicPlayer) : null
-					this.playing = false
-					this.loadedMusic = false
-					this.emitSubmit(formData)
+					this.emitSubmit(formData, this.musicuuid)
 				}
 			})
 		},
@@ -355,8 +357,37 @@ export default {
 			Object.keys(this.uploadPoster).forEach((k) => {
 				this.uploadPoster[k] = null
 			})
-		}
-	}
+		},
+		initForm() {
+			const {
+				title,
+				singer,
+				uuid,
+				url,
+				url_id,
+				url_uuid,
+				url_title,
+				url_name,
+				poster,
+				poster_id,
+				poster_uuid,
+				poster_title,
+				poster_name,
+			} = this.formData
+			this.form.setFieldsValue({ title, singer })
+			this.musicuuid = uuid
+			this.uploadMusic.url = url
+			this.uploadMusic.id = url_id
+			this.uploadMusic.uuid = url_uuid
+			this.uploadMusic.title = url_title
+			this.uploadMusic.name = url_name
+			this.uploadPoster.url = poster
+			this.uploadPoster.id = poster_id
+			this.uploadPoster.uuid = poster_uuid
+			this.uploadPoster.title = poster_title
+			this.uploadPoster.name = poster_name
+		},
+	},
 }
 </script>
 
@@ -368,13 +399,13 @@ export default {
 	width: 90px;
 	cursor: default;
 
-	.music-title {
-		font-size: 12px;
-		display: block;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
+.music-title {
+	font-size: 12px;
+	display: block;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
 }
 .delete-music-btn {
 	position: absolute;
@@ -386,15 +417,15 @@ export default {
 .show-uploaded-poster {
 	width: 90px;
 	height: 90px;
-	img {
-		max-width: 100%;
-		cursor: default;
-	}
+img {
+	max-width: 100%;
+	cursor: default;
+}
 
-	.delete-poster-btn {
-		position: absolute;
-		left: 90px;
-		cursor: pointer;
-	}
+.delete-poster-btn {
+	position: absolute;
+	left: 90px;
+	cursor: pointer;
+}
 }
 </style>

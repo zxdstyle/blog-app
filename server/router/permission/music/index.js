@@ -12,6 +12,7 @@ const router = new koaRouter({ prefix: "/api/permission/music" })
 const musicController = require("../../../controller/music")
 
 router
+	.get("/list", musicController.getMusicByPage)
 	.post("/create", musicController.createMusic)
 	.post("/update/:uuid", musicController.updateMusic)
 	.post("/remove/:uuid", musicController.removeMusic)

@@ -4,6 +4,9 @@
 
 import {
 	GetMusicListApi,
+	CreateMusicApi,
+	RemoveMusicApi,
+	UpdateMusicApi,
 } from "@api/music/music-api"
 
 const state = {
@@ -68,12 +71,42 @@ const actions = {
 			}
 			const { data, total } = await api.send()
 			commit("setLoading", false)
-			console.log(data)
 			commit("setMusicList", data)
 			commit("setTotal", total)
 		} catch (error) {
 			commit("setLoading", false)
 			return error
+		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async createMusic({ commit }, payload) {
+		try {
+			const api = new CreateMusicApi()
+			api.data = payload
+			return await api.send()
+		} catch (err) {
+			return err
+		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async removeMusic({ commit }, payload) {
+		try {
+			const { uuid } = payload
+			const api = new RemoveMusicApi({ uuid })
+			return await api.send()
+		} catch (err) {
+			return err
+		}
+	},
+	// eslint-disable-next-line no-unused-vars
+	async updateMusic({ commit }, payload) {
+		try {
+			const { uuid, formData } = payload
+			const api = new UpdateMusicApi({ uuid })
+			api.data = formData
+			return await api.send()
+		} catch (err) {
+			return err
 		}
 	},
 }
