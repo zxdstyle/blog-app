@@ -5,131 +5,15 @@
 
 import "./index.scss"
 import { debounce } from "@/util/generic/fn-core"
+import {
+	GetRandomMusicApi,
+	GetCurrentMusicApi,
+	GetSearchMusicApi,
+} from "@api/music/music-api"
 
 const loadFaildImg = "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9rguy3btj306p05tjr6.jpg"
 
-const musicList = [
-	{
-		"title": "Dream It Possible",
-		"author": "Delacey",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/dreamit.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk8v4iosc4j30f00f0q5s.jpg",
-		"language": ["英语"],
-		"style": ["摇滚", "励志"],
-	},
-	{
-		"title": "情感禁区",
-		"author": "刘德华",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/qingganjinqu.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk8vf35ol8j30go0gotns.jpg",
-		"language": ["粤语"],
-		"style": ["传统", "情感"],
-	},
-	{
-		"title": "不再犹豫",
-		"author": "Beyond",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/buzaiyouyu.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk8viyzglaj30go0gowfh.jpg",
-		"language": ["粤语"],
-		"style": ["摇滚", "励志"],
-	},
-	{
-		"title": "相思",
-		"author": "毛阿敏",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/xiangsi.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk8vvky642j30go0gogm7.jpg",
-		"language": ["汉语"],
-		"style": ["传统", "情感"],
-	},
-	{
-		"title": "烦恼歌",
-		"author": "张学友",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/fannaoge.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk8wa0ncp7j30go0gojzd.jpg",
-		"language": ["汉语"],
-		"style": ["摇滚"],
-	},
-	{
-		"title": "Salt",
-		"author": "Ava Max",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/salt.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9wm366j1j30go0gowid.jpg",
-		"language": ["英语"],
-		"style": ["摇滚"],
-	},
-	{
-		"title": "Lonely Dance",
-		"author": "Vexento",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/lonelydance.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9wnv9nw7j30dp0dpwh8.jpg",
-		"language": [],
-		"style": ["摇滚", "纯音乐"],
-	},
-	{
-		"title": "YaSuo",
-		"author": "league",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/yasuo.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9wsed6qbj30go09sjzk.jpg",
-		"language": ["汉语"],
-		"style": ["摇滚"],
-	},
-	{
-		"title": "野孩子",
-		"author": " 杨千嬅",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/yehaizi.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9wx277foj30go0go0vo.jpg",
-		"language": ["粤语"],
-		"style": ["传统"],
-	},
-	{
-		"title": "打上花火",
-		"author": "米津玄師",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/dashanghuahuo.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9x0op1cqj30go0go79n.jpg",
-		"language": ["日语"],
-		"style": ["传统"],
-	},
-	{
-		"title": "他只是经过",
-		"author": "Felix Bennett",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/tazhishijingguo.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9x2dlbrkj30go0gomzs.jpg",
-		"language": ["汉语"],
-		"style": ["传统", "情感"],
-	},
-	{
-		"title": "Walk Thru Fire",
-		"author": "Vicetone",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/walkthrufire.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9x70hnjuj30go0go145.jpg",
-		"language": ["英语"],
-		"style": ["传统"],
-	},
-	{
-		"title": "谁伴我闯荡",
-		"author": "Beyond",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/sheibanwochuangdang.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9x9u8in4j30go0gon0c.jpg",
-		"language": ["粤语"],
-		"style": ["励志"],
-	},
-	{
-		"title": "渴望光荣",
-		"author": "群星",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/kewangguangrong.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9xc16xvej30go0gojww.jpg",
-		"language": ["汉语"],
-		"style": ["励志"],
-	},
-	{
-		"title": "兄弟想你了",
-		"author": "未知",
-		"url": "https://cdn.jsdelivr.net/gh/1046224544/musiclist1@master/xiongdixiangnile.mp3",
-		"post": "http://ww1.sinaimg.cn/large/005HV6Avgy1gk9xhkvp1oj308c08c0sw.jpg",
-		"language": ["汉语"],
-		"style": ["摇滚", "情感"],
-	},
-];
+let retry = 0
 
 const MUSICPLAYER_SIZE_STATUS = {
 	LG: "large",
@@ -143,9 +27,11 @@ const MusicPlayer = {
 			searchMusicList: [],
 			showSearch: false,
 			spinning: false,
+			searchSpinning: false,
 			currentMusic: {},
+			prev: {},
+			next: {},
 			playing: false,
-			musicIndex: -1,
 			musicPlayerStatus: MUSICPLAYER_SIZE_STATUS.LG,
 		}
 	},
@@ -157,11 +43,27 @@ const MusicPlayer = {
 	},
 
 	mounted() {
-		this.currentMusic = musicList[Math.floor(Math.random() * musicList.length)]
-		this.musicIndex = musicList.map((music) => music.title).indexOf(this.currentMusic.title)
+		this.spinning = true
+		this.initMusic()
 	},
 
 	methods: {
+		async initMusic() {
+			try {
+				const api = new GetRandomMusicApi()
+				const { model } = await api.send()
+				const { prevMusic, nextMusic } = model
+				this.currentMusic = model
+				this.prev = prevMusic
+				this.next = nextMusic
+			} catch (error) {
+				console.log(error)
+				retry ++
+				if (retry < 3) {
+					this.initMusic()
+				}
+			}
+		},
 		// 播放 / 暂停
 		togglePlay() {
 			if (this.playing) {
@@ -172,25 +74,57 @@ const MusicPlayer = {
 			this.playing = !this.playing
 		},
 		// 下一首
-		nextMusic() {
+		async nextMusic() {
 			this.spinning = true
-			if (this.musicIndex < musicList.length - 1) {
-				this.musicIndex++
-				this.currentMusic = musicList[this.musicIndex]
-			} else {
-				this.musicIndex = 0
-				this.currentMusic = musicList[this.musicIndex]
+			try {
+				if (this.searchMusicList.length) {
+					const [playing] = this.searchMusicList.filter((m) =>  m.uuid === this.currentMusic.uuid)
+					const [currentMusic] = this.searchMusicList.filter((m) =>  m.uuid === playing.nextMusic.uuid)
+					const { prevMusic, nextMusic } = currentMusic
+					if (currentMusic.uuid === this.currentMusic.uuid) {
+						this.spinning = false
+					}
+					this.currentMusic = currentMusic
+					this.prev = prevMusic
+					this.next = nextMusic
+					return
+				}
+				const { uuid } = this.next
+				const api = new GetCurrentMusicApi({ uuid })
+				const { model } = await api.send()
+				const { prevMusic, nextMusic } = model
+				this.currentMusic = model
+				this.prev = prevMusic
+				this.next = nextMusic
+			} catch (error) {
+				console.log(error)
 			}
 		},
 		// 上一首
-		prevMusic() {
+		async prevMusic() {
 			this.spinning = true
-			if (this.musicIndex < 1) {
-				this.musicIndex = musicList.length - 1
-				this.currentMusic = musicList[this.musicIndex]
-			} else {
-				this.musicIndex--
-				this.currentMusic = musicList[this.musicIndex]
+			try {
+				if (this.searchMusicList.length) {
+					const [playing] = this.searchMusicList.filter((m) =>  m.uuid === this.currentMusic.uuid)
+					const [currentMusic] = this.searchMusicList.filter((m) =>  m.uuid === playing.prevMusic.uuid)
+					const { prevMusic, nextMusic } = currentMusic
+					if (currentMusic.uuid === this.currentMusic.uuid) {
+						this.spinning = false
+					}
+					this.currentMusic = currentMusic
+					this.prev = prevMusic
+					this.next = nextMusic
+					return
+				}
+				const { uuid } = this.prev
+				const api = new GetCurrentMusicApi({ uuid })
+				const { model } = await api.send()
+				const { prevMusic, nextMusic } = model
+				this.currentMusic = model
+				this.prev = prevMusic
+				this.next = nextMusic
+			} catch (error) {
+				console.log(error)
 			}
 		},
 		// 加载音乐
@@ -222,25 +156,28 @@ const MusicPlayer = {
 			this.musicPlayerStatus = type
 			this.showSearch = false
 		},
-		handleSearch(searchKey) {
-			if (!searchKey) {
-				this.searchMusicList = [];
-			} else {
-				const clonedMusics = [...musicList]
-				this.searchMusicList = clonedMusics.filter((music) => {
-					return music.title.toLowerCase().includes(searchKey.toString().toLowerCase())
-				})
+		async handleSearch(searchKey) {
+			try {
+				this.searchSpinning = true
+				const api = new GetSearchMusicApi()
+				api.params = {
+					keyword: searchKey,
+				}
+				const { data } = await api.send()
+				this.searchMusicList = data
+				this.searchSpinning = false
+			} catch (error) {
+				console.log(error)
 			}
 		},
 		jumpPlay(music) {
-			if (this.currentMusic === music) return
+			if (music.uuid !== this.currentMusic.uuid) {
+				this.spinning = true
+			}
+			const { prevMusic, nextMusic } = music
 			this.currentMusic = music
-			const index = musicList.map((item) => item.title.toLowerCase()).indexOf(music.title.toLowerCase())
-			this.musicIndex = index
-			this.$nextTick(() => {
-				this.$refs.musicPlayer.play()
-				this.playing = true
-			})
+			this.prev = prevMusic
+			this.next = nextMusic
 		},
 		toggleShowSearch() {
 			this.showSearch = !this.showSearch
@@ -278,7 +215,7 @@ const MusicPlayer = {
 					onClick={() => this.toggleMusicPlayer(MUSICPLAYER_SIZE_STATUS.LG)}
 				>
 					<img
-						src={this.currentMusic.post}
+						src={this.currentMusic.poster}
 					/>
 				</div>
 				<div class="music-content">
@@ -383,14 +320,20 @@ const MusicPlayer = {
 								</svg>
 							</use>
 						</svg>
-						<input
-							v-model={this.searchKey}
-							ref={"searchInput"}
-							type="text"
-							class="search-input"
-							placeholder="搜索歌曲..."
-							onInput={(e) => debounce(this.handleSearch, 800)(this.searchKey)}
-						/>
+						<a-spin
+							class={"search-loading"}
+							spinning={this.searchSpinning}
+						>
+							<a-icon slot="indicator" type="loading" style="font-size: 20px;color:#c4b597" spin />
+							<input
+								v-model={this.searchKey}
+								ref={"searchInput"}
+								type="text"
+								class="search-input"
+								placeholder="搜索歌曲..."
+								onInput={(e) => debounce(this.handleSearch, 800)(this.searchKey)}
+							/>
+						</a-spin>
 					</div>
 					<ul class="list-content">
 						{
@@ -401,7 +344,7 @@ const MusicPlayer = {
 								>
 									<span>{index + 1}.</span>
 									<span class={"music-title"}>{music.title}</span>
-									<span class={"music-author"}> —— {music.author}</span>
+									<span class={"music-author"}> —— {music.singer}</span>
 								</li>
 							})
 						}

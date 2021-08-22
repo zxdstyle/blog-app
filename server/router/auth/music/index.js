@@ -12,7 +12,10 @@ const router = new koaRouter({ prefix: "/api/music" })
 const musicController = require("../../../controller/music")
 
 router
-	.get("/all", musicController.getAllMusic)
+	// .get("/all", musicController.getAllMusic)
+	.get("/random", musicController.getRandomMusic)
+	.get("/current/:uuid", musicController.getCurrentMusic)
+	.get("/search", musicController.getSearchMusic)
 
 
 module.exports = router

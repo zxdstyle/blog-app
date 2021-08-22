@@ -179,7 +179,7 @@ $musicPlayerSML: $musicPlayerH;
 			}
 			.music-author {
 				display: inline-block;
-				max-width: calc(100% - #{$musicTitleWidth} - 5%);
+				max-width: calc(100% - #{$musicTitleWidth});
 				padding: 0 rem(10);
 				white-space: nowrap;
 				overflow: hidden;
@@ -247,4 +247,10 @@ $musicPlayerSML: $musicPlayerH;
 		font-size: rem(30);
 		z-index: 105;
 	}
+}
+
+.search-loading > div > .ant-spin .ant-spin-dot{
+	position: absolute;
+	left: 95%;
+	margin-top: 5px;
 }

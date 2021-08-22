@@ -226,5 +226,212 @@ module.exports = {
 			}
 		}
 	},
-
+	// 随机获取一首歌
+	getRandomMusic: async (ctx, next) => {
+		try {
+			let queryMsg = {}
+			const { results } = await ctx.db(`
+				SELECT
+				m.id id, m.title title, m.singer singer, m.uuid uuid,
+				res.filename url, res.type url_type, res.id url_id, res.uuid url_uuid, res.filename url_name, res.origin_name url_title,
+				res1.filename poster, res1.type poster_type, res1.id poster_id, res1.uuid poster_uuid, res1.filename poster_name, res1.origin_name poster_title,
+				m.createTime createTime
+				from music m
+				LEFT JOIN resource res on m.url_id=res.id
+				LEFT JOIN resource res1 on m.poster_id=res1.id
+			`)
+			const musicList = results.map((m) => ({
+				...m,
+				url: getFileHttpURL(ctx, m.url_name, m.url_type),
+				poster: getFileHttpURL(ctx, m.poster_name, m.poster_type),
+			}))
+			if (results && !results.length) {
+				queryMsg = {
+					code: 404,
+					success: true,
+					model: {
+						uuid: null,
+						url: null,
+						title: null,
+						singer: null,
+						poster: null,
+						prevMusic: {
+							uuid: null,
+						},
+						nextMusic: {
+							uuid: null,
+						}
+					}
+				}
+			} else {
+				const random = Math.floor(Math.random() * musicList.length)
+				const next = (random + 1) > musicList.length - 1 ? musicList[0] : musicList[random + 1]
+				const prev = (random - 1) < 0 ? musicList[musicList.length - 1] : musicList[random - 1]
+				const curMusic = musicList[random]
+				const { uuid, url, title, singer, poster } = curMusic
+				queryMsg = {
+					message: "获取成功",
+					success: true,
+					model: {
+						uuid,
+						url,
+						title,
+						singer,
+						poster,
+						prevMusic: {
+							uuid: prev.uuid,
+							title: prev.title,
+						},
+						nextMusic: {
+							uuid: next.uuid,
+							title: next.title,
+						},
+					}
+				}
+			}
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
+	// 获取当前歌曲
+	getCurrentMusic: async (ctx, next) => {
+		try {
+			let queryMsg = {}
+			const { uuid } = ctx.request.params
+			const { results: queryList } = await ctx.db(`
+				SELECT
+				m.id id, m.title title, m.singer singer, m.uuid uuid,
+				res.filename url, res.type url_type, res.id url_id, res.uuid url_uuid, res.filename url_name, res.origin_name url_title,
+				res1.filename poster, res1.type poster_type, res1.id poster_id, res1.uuid poster_uuid, res1.filename poster_name, res1.origin_name poster_title,
+				m.createTime createTime
+				from music m
+				LEFT JOIN resource res on m.url_id=res.id
+				LEFT JOIN resource res1 on m.poster_id=res1.id
+			`)
+			const musicList = Array.from(queryList).map((m) => ({
+				...m,
+				url: getFileHttpURL(ctx, m.url_name, m.url_type),
+				poster: getFileHttpURL(ctx, m.poster_name, m.poster_type),
+			}))
+			if (musicList && !musicList.length) {
+				queryMsg = {
+					code: 404,
+					error: "歌曲不存在",
+					errorMsg: {
+						message: "歌曲不存在",
+					},
+				}
+			} else {
+				let currentMusic, currentMusicIndex
+				const queryMusic = musicList.filter((m, index) => {
+					if (m.uuid === uuid) {
+						currentMusicIndex = index
+					}
+					return m.uuid === uuid
+				})
+				if (!queryMusic.length) {
+					queryMsg = {
+						code: 404,
+						error: "歌曲不存在",
+						errorMsg: {
+							message: "歌曲不存在",
+						},
+					}
+				} else {
+					currentMusic = musicList[currentMusicIndex]
+					const next = (currentMusicIndex + 1) > musicList.length - 1 ? musicList[0] : musicList[currentMusicIndex + 1]
+					const prev = (currentMusicIndex - 1) < 0 ? musicList[musicList.length - 1] : musicList[currentMusicIndex - 1]
+					const { uuid, url, title, singer, poster } = currentMusic
+					queryMsg = {
+						message: "获取成功",
+						success: true,
+						model: {
+							uuid,
+							url,
+							title,
+							singer,
+							poster,
+							prevMusic: {
+								uuid: prev.uuid,
+								title: prev.title,
+							},
+							nextMusic: {
+								uuid: next.uuid,
+								title: next.title,
+							}
+						}
+					}
+				}
+			}
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
+	// 搜索音乐
+	getSearchMusic: async (ctx, next) => {
+		try {
+			let queryMsg = {}
+			let { keyword } = ctx.request.query
+			keyword = keyword || ""
+			const { results } = await ctx.db(`
+				SELECT
+				m.id id, m.title title, m.singer singer, m.uuid uuid,
+				res.filename url, res.type url_type, res.id url_id, res.uuid url_uuid, res.filename url_name, res.origin_name url_title,
+				res1.filename poster, res1.type poster_type, res1.id poster_id, res1.uuid poster_uuid, res1.filename poster_name, res1.origin_name poster_title,
+				m.createTime createTime
+				from music m
+				LEFT JOIN resource res on m.url_id=res.id
+				LEFT JOIN resource res1 on m.poster_id=res1.id
+				where title like '%${keyword}%' or singer like '%${keyword}%'
+			`)
+			const musicList = Array.from(results).map((m, index) => {
+				const model = {
+					uuid: m.uuid,
+					url: getFileHttpURL(ctx, m.url_name, m.url_type),
+					title: m.title,
+					singer: m.singer,
+					poster: getFileHttpURL(ctx, m.poster_name, m.poster_type),
+				}
+				const next = (index + 1) > results.length - 1 ? results[0] : results[index + 1]
+				const prev = (index - 1) < 0 ? results[results.length - 1] : results[index - 1]
+				model.prevMusic = {
+					uuid: prev.uuid,
+					title: prev.title,
+				}
+				model.nextMusic = {
+					uuid: next.uuid,
+					title: next.title,
+				}
+				return model
+			})
+			queryMsg = {
+				message: "获取成功",
+				success: true,
+				data: musicList,
+			}
+			return queryMsg
+		} catch (error) {
+			return {
+				code: 500,
+				errorMsg: {
+					message: error.message,
+				},
+				error,
+			}
+		}
+	},
 }

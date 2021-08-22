@@ -52,6 +52,9 @@ const Header = {
 									<a-menu-item>
 										<a href="javascript:;">登出</a>
 									</a-menu-item>
+									<a-menu-item>
+										<a href="/">去网站</a>
+									</a-menu-item>
 								</a-menu>
 							</a-dropdown>
 						) : null

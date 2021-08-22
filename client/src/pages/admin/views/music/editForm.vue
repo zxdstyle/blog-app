@@ -125,6 +125,11 @@
 
 		<div class="drawer-bottom-elem">
 			<a-button
+				@click="() => emitClose()"
+			>
+				取消
+			</a-button>
+			<a-button
 				type="primary"
 				html-type="submit"
 				:loading="loading"
@@ -311,6 +316,10 @@ export default {
 					this.playing = true
 					this.loadedMusic = true
 					audio.play()
+				})
+				audio.addEventListener("ended", () => {
+					this.playing = false
+					audio.pause()
 				})
 				audio.onerror = () => {
 					loading()

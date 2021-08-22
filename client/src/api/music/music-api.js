@@ -9,6 +9,7 @@
 
 import BaseRequestApi from "@api/api-class/base-request-api"
 
+// 后台获取
 export class GetMusicListApi extends BaseRequestApi {
 	url() {
 		return "/api/permission/music/list"
@@ -52,5 +53,31 @@ export class UpdateMusicApi extends BaseRequestApi {
 
 	method() {
 		return "POST"
+	}
+}
+
+
+// 前台
+export class GetRandomMusicApi extends BaseRequestApi {
+	url() {
+		return "/api/music/random"
+	}
+}
+
+export class GetCurrentMusicApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid= uuid
+	}
+
+
+	url() {
+		return `/api/music/current/${this.uuid}`
+	}
+}
+
+export class GetSearchMusicApi extends BaseRequestApi {
+	url() {
+		return "/api/music/search"
 	}
 }

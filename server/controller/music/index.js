@@ -90,4 +90,46 @@ module.exports = {
 			}
 		}
 	},
+	// 随机获取一首歌
+	getRandomMusic: async (ctx, next) => {
+		try {
+			const query = await musicService.getRandomMusic(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+	},
+	// 获取当前歌曲
+	getCurrentMusic: async (ctx, next) => {
+		try {
+			const { uuid } = ctx.request.params
+			await ctx.validateField(uuid, "歌曲id不能为空")
+			await ctx.contrastField(uuid, "歌曲id错误", () => !isNaN(Number(uuid)))
+			const query = await musicService.getCurrentMusic(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+	},
+	// 搜索音乐
+	getSearchMusic: async (ctx, next) => {
+		try {
+			const query = await musicService.getSearchMusic(ctx, next)
+			ctx.body = {
+				...query,
+			}
+		} catch (error) {
+			ctx.body = {
+				...error,
+			}
+		}
+	},
 }
