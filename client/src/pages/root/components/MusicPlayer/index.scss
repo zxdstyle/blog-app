@@ -179,7 +179,7 @@ $musicPlayerSML: $musicPlayerH;
 			}
 			.music-author {
 				display: inline-block;
-				max-width: calc(100% - #{$musicTitleWidth});
+				max-width: calc(100% - #{$musicTitleWidth} - 12px);
 				padding: 0 rem(10);
 				white-space: nowrap;
 				overflow: hidden;

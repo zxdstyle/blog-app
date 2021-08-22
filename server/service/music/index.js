@@ -397,6 +397,7 @@ module.exports = {
 				LEFT JOIN resource res on m.url_id=res.id
 				LEFT JOIN resource res1 on m.poster_id=res1.id
 				where title like '%${keyword}%' or singer like '%${keyword}%'
+				order by m.id DESC
 			`)
 			const musicList = Array.from(results).map((m, index) => {
 				const model = {

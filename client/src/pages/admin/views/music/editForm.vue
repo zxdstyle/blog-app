@@ -145,9 +145,9 @@ import { getFileExt, isCorrectType } from "@/util";
 import { UploadFileApi, RemoveFileApi } from "@api/upload"
 import { UPLOAD_FILE_TYPE } from "@pages/admin/constant/file-type"
 
-const supportVoiceTypes = [".mp3"]
+const supportVoiceTypes = [".mp3", ".m4a", ".ogg"]
 const supportVoiceSize = 1024 * 1024 * 10
-const supportPosterTypes = [".png", ".jpg", ".jpeg"]
+const supportPosterTypes = [".png", ".jpg", ".jpeg", ".webp", ".gif"]
 const supportPosterSize = 1024 * 1024 * 5
 
 let musicPlayer

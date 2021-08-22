@@ -183,6 +183,9 @@ const MusicPlayer = {
 			this.currentMusic = music
 			this.prev = prevMusic
 			this.next = nextMusic
+			if (!this.playing) {
+				this.togglePlay()
+			}
 		},
 		toggleShowSearch() {
 			this.showSearch = !this.showSearch
