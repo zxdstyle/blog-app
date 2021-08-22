@@ -53,6 +53,9 @@ const MusicPlayer = {
 				const api = new GetRandomMusicApi()
 				const { model } = await api.send()
 				const { prevMusic, nextMusic } = model
+				if (this.currentMusic.uuid === model.uuid) {
+					this.spinning = false
+				}
 				this.currentMusic = model
 				this.prev = prevMusic
 				this.next = nextMusic
@@ -97,6 +100,7 @@ const MusicPlayer = {
 				this.prev = prevMusic
 				this.next = nextMusic
 			} catch (error) {
+				this.initMusic()
 				console.log(error)
 			}
 		},
@@ -124,6 +128,7 @@ const MusicPlayer = {
 				this.prev = prevMusic
 				this.next = nextMusic
 			} catch (error) {
+				this.initMusic()
 				console.log(error)
 			}
 		},
