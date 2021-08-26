@@ -1,0 +1,6 @@
+script.
+	var isIE = !!window.ActiveXObject
+	if (isIE) {
+		document.body.innerHTML = ""
+		document.write("<h2 style='text-align: center'><a href='https://www.google.cn/intl/zh-CN/chrome/'>大哥换个谷歌浏览器吧...</a></h2>")
+	}

@@ -11,6 +11,8 @@ const extractCss = require("mini-css-extract-plugin")
 const eslintFormatter = require("eslint-friendly-formatter")
 const { Client } = require("../config")
 
+const isProd = process.env.NODE_ENV === "production" ? true : false
+
 // rules
 const loaders = (USE_HASH = false) => {
 	return [
@@ -40,6 +42,7 @@ const loaders = (USE_HASH = false) => {
 					loader: "pug-html-loader",
 					options: {
 						data: {
+							DEV_ENV: !isProd,
 							PROJECT_TITLE: Client.PROJECT_TYPE,
 							SERVICE_RUN_MODE: Client.SERVICE_RUN_MODE,
 						},

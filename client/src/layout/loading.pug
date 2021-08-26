@@ -123,6 +123,15 @@ style.
 script.
 	let timer
 	const loadingNum = document.querySelector("#progress-num")
+	timer = setInterval(() => {
+		loadingNum.innerHTML = Number(loadingNum.innerHTML) + 2
+		if (Number(loadingNum.innerHTML) > 90) {
+			loadingNum.innerHTML = Number(Number(loadingNum.innerHTML) + 0.2).toFixed()
+		}
+		if (Number(loadingNum.innerHTML) > 98) {
+			clearInterval(timer)
+		}
+	}, 10)
 	document.onreadystatechange = () => {
 		if (document.readyState === "complete") {
 			clearInterval(timer)
@@ -131,16 +140,6 @@ script.
 				document.querySelector("#blog-app-loading").setAttribute("class", "fade")
 				document.querySelector("#blog-app-loading").style.zIndex = -10
 			}, 100)
-		} else {
-			timer = setInterval(() => {
-				loadingNum.innerHTML = Number(loadingNum.innerHTML) + 2
-				if (Number(loadingNum.innerHTML) > 90) {
-					loadingNum.innerHTML = Number(Number(loadingNum.innerHTML) + 0.2).toFixed()
-				}
-				if (Number(loadingNum.innerHTML) > 98) {
-					clearInterval(timer)
-				}
-			}, 10)
 		}
 	}
 	window.onerror = () => {
