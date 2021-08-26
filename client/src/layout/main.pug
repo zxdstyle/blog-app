@@ -39,24 +39,26 @@ html(lang="en")
 		//- page loading
 		include /layout/loading.pug
 
+		script(src="https://cdn.bootcdn.net/ajax/libs/jquery/2.2.4/jquery.min.js")
+		script.
+			const pageTitle = document.title
+			let scrollTitleTimer
+			document.addEventListener("visibilitychange", e => {
+				if (document.visibilityState === "hidden") {
+					document.title = "兄dei，等你回来~  \t"
+					scrollTitleTimer = setInterval(() => {
+						var tag = document.querySelector('title');
+						var content = tag.innerText;
+						var firstStr = content.charAt(0);
+						var surplue = content.substring(1, content.length);
+						var new_content = surplue + firstStr;
+						tag.innerText = new_content;
+					}, 300);
+				} else if (document.visibilityState) {
+					clearInterval(scrollTitleTimer)
+					document.title = pageTitle
+				}
+			})
 		//- Selective insertion script (like: script(src="/lib/jquery.js"))
 		block scripts
-			script.
-				const pageTitle = document.title
-				let scrollTitleTimer
-				document.addEventListener("visibilitychange", e => {
-					if (document.visibilityState === "hidden") {
-						document.title = "兄dei，等你回来~  \t"
-						scrollTitleTimer = setInterval(() => {
-							var tag = document.querySelector('title');
-							var content = tag.innerText;
-							var firstStr = content.charAt(0);
-							var surplue = content.substring(1, content.length);
-							var new_content = surplue + firstStr;
-							tag.innerText = new_content;
-						}, 300);
-					} else if (document.visibilityState) {
-						clearInterval(scrollTitleTimer)
-						document.title = pageTitle
-					}
-				})
+

@@ -11,6 +11,7 @@ const { merge } = require("webpack-merge")
 const extractCss = require("mini-css-extract-plugin")
 const { BASE_CONFIFG, Copyright, resolve, USE_HASH } = require("./webpack.config")
 const { loaders } = require("./webpack.loader")
+const getCacheGroups = require("./webpack.split")
 
 const prodConfig = merge(BASE_CONFIFG, {
 	mode: "production",
@@ -32,6 +33,12 @@ const prodConfig = merge(BASE_CONFIFG, {
 	performance: {
 		hints: 'warning',
 	},
+	externals: {
+		"vue": "Vue",
+		"vue-router": "VueRouter",
+		"vuex": "Vuex",
+		"jquery": "jQuery",
+	},
 	// @ts-ignore
 	module: {
 		rules: [
@@ -52,23 +59,7 @@ const prodConfig = merge(BASE_CONFIFG, {
 			maxAsyncRequests: 5,
 			maxInitialRequests: 3,
 			name: false,
-			cacheGroups: {
-				vender: {
-					test: /[\\/]node_modules[\\/]/,
-					chunks: "all",
-					minSize: 0,
-					minChunks: 2,
-					priority: -10,
-					name: "vendor"
-				},
-				common: {
-					chunks: "all",
-					minSize: 20000,
-					minChunks: 2,
-					name: "common",
-					priority: -20,
-				}
-			}
+			cacheGroups: getCacheGroups(),
 		}
 	}
 })
