@@ -1,5 +1,7 @@
 import Vue from "vue"
 import VueRouter from "vue-router"
+import NProgress from "nprogress/nprogress"
+import "nprogress/nprogress.css"
 
 Vue.use(VueRouter)
 
@@ -47,7 +49,7 @@ export const headerMenuRoutes = [
 	},
 ]
 
-export default new VueRouter({
+const router = new VueRouter({
 	mode: "hash",
 	routes: [
 		{
@@ -65,3 +67,16 @@ export default new VueRouter({
 		}
 	],
 })
+
+NProgress.configure({ easing: "ease", speed: 500, showSpinner: false })
+
+router.beforeEach((to, from, next) => {
+	NProgress.start()
+	next()
+})
+
+router.afterEach(() => {
+	NProgress.done()
+})
+
+export default router
