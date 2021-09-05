@@ -17,6 +17,9 @@ import {
 	Drawer,
 	Upload,
 	PageHeader,
+	Skeleton,
+	Popover,
+	Radio,
 	ConfigProvider,
 } from "ant-design-vue"
 
@@ -39,6 +42,9 @@ const components = [
 	Drawer,
 	Upload,
 	PageHeader,
+	Skeleton,
+	Popover,
+	Radio,
 	ConfigProvider,
 ]
 

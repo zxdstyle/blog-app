@@ -14,15 +14,10 @@
 				slot="extra"
 			>
 				<a-button
-					type="primary"
+					class="success-btn"
 					@click="handleSubmit"
 				>
 					保存
-				</a-button>
-				<a-button
-					class="success-btn"
-				>
-					发布
 				</a-button>
 			</template>
 		</a-page-header>
@@ -111,7 +106,68 @@
 					</a-form-item>
 
 					<a-form-item
-						label="6.内容"
+						label="6.外链"
+						required
+					>
+						<a-radio-group
+							v-model="isLink"
+							:options="yesOrNoOptions"
+							@change="changeIsLink"
+						/>
+					</a-form-item>
+
+					<a-form-item
+						v-if="isLink > 0"
+						label="7.外链地址"
+					>
+						<a-input
+							v-decorator="['link_url', {
+								inititalValue: '',
+								rules: [
+									{required: true, message: '请输入外链地址'}
+								]
+							}]"
+							style="width: 600px"
+							placeholder="请输入外链地址"
+						/>
+					</a-form-item>
+
+					<a-form-item
+						label="8.原创"
+						required
+					>
+						<a-radio-group
+							v-model="isOriginal"
+							:options="yesOrNoOptions"
+							@change="changeIsOriginal"
+						/>
+					</a-form-item>
+
+					<a-form-item
+						label="9.置顶"
+						required
+					>
+						<a-radio-group
+							v-model="isTop"
+							:options="yesOrNoOptions"
+							@change="changeIsTop"
+						/>
+					</a-form-item>
+
+					<a-form-item
+						label="10.发布"
+						required
+					>
+						<a-radio-group
+							v-model="isPublish"
+							:options="yesOrNoOptions"
+							@change="changeIsPublish"
+						/>
+					</a-form-item>
+
+					<a-form-item
+						v-if="isLink < 1"
+						label="11.内容"
 						required
 					>
 						<byte-editor
@@ -130,6 +186,11 @@
 import { mapState, mapActions } from "vuex"
 import { Editor as ByteEditor } from "@/components/ByteMd/ByteMd"
 
+const yesOrNoOptions = [
+	{ label: "是", value: "1", key: 1 },
+	{ label: "否", value: "0", key: 0 },
+]
+
 export default {
 	name: "CreateArticle",
 
@@ -141,6 +202,10 @@ export default {
 		this.form = this.$form.createForm(this)
 		return {
 			articleContent: '',
+			isLink: yesOrNoOptions[1].value,
+			isOriginal: yesOrNoOptions[0].value,
+			isTop: yesOrNoOptions[1].value,
+			isPublish: yesOrNoOptions[0].value,
 		}
 	},
 
@@ -162,6 +227,9 @@ export default {
 				value: tag.id,
 				label: tag.title,
 			}))
+		},
+		yesOrNoOptions() {
+			return yesOrNoOptions
 		},
 	},
 
@@ -189,6 +257,10 @@ export default {
 					const formData = {
 						...values,
 						content: this.articleContent,
+						is_link: this.isLink,
+						is_original: this.isOriginal,
+						is_top: this.isTop,
+						publish: this.isPublish,
 					}
 					const loading = this.$message.loading("请稍后...", -1)
 					this.createArticle(formData)
@@ -201,6 +273,18 @@ export default {
 						})
 				}
 			})
+		},
+		changeIsLink(e) {
+			this.isLink = e.target.value
+		},
+		changeIsOriginal(e) {
+			this.isOriginal = e.target.value
+		},
+		changeIsTop(e) {
+			this.isTop = e.target.value
+		},
+		changeIsPublish(e) {
+			this.isPublish = e.target.value
 		},
 	}
 }

@@ -101,7 +101,7 @@ async function validateForm() {
 			type: "success",
 			message: data.message || "登录成功",
 			Ok() {
-				location.href = "/"
+				location.href = "/admin"
 			}
 		})
 		$(this).attr("disabled", false).text("登录")

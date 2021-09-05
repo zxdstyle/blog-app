@@ -12,8 +12,14 @@ const router = new koaRouter({ prefix: "/api/permission/article" })
 const articleController = require("../../../controller/auth/article")
 
 router
+	.get("/list", articleController.getArticleList)
+	.get("/detail/:uuid", articleController.getArticleDetail)
 	.post("/create", articleController.createArticle)
 	.post("/remove/:uuid", articleController.removeArticle)
+	.post("/update/:uuid", articleController.updateArticle)
+	.post("/toggletop/:uuid", articleController.toggleTop)
+	.post("/comments/:id/remove", articleController.removeComment)
+	
 
 
 module.exports = router

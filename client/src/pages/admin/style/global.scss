@@ -55,3 +55,11 @@ $contentPadding: 5;
 		}
 	}
 }
+
+.more-action-pop-link {
+	display: block;
+
+	&:hover {
+		color: salmon;
+	}
+}

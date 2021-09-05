@@ -71,11 +71,12 @@ export const menuRoutes = [
 				}
 			},
 			{
-				path: "detail/:articleId/comment",
+				path: "comment/:articleId",
 				title: "文章评论",
 				name: "articleComment",
 				key: "articleComment",
 				showMenu: false,
+				component: () => import("@/pages/admin/views/article/comment"),
 				meta: {
 					matchRoute: "articleList",
 				}

@@ -11,7 +11,7 @@ import BaseRequestApi from "@api/api-class/base-request-api"
 
 export class GetArticleListApi extends BaseRequestApi {
 	url() {
-		return "/api/auth/article/list"
+		return "/api/permission/article/list"
 	}
 }
 
@@ -47,6 +47,43 @@ export class GetArticleDetail extends BaseRequestApi {
 	}
 
 	url() {
-		return `/api/auth/article/detail/${this.uuid}`
+		return `/api/permission/article/detail/${this.uuid}`
+	}
+}
+
+export class ToggleArticleTopApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	method() {
+		return "POST"
+	}
+
+	url() {
+		return `/api/permission/article/toggletop/${this.uuid}`
+	}
+}
+
+export class UpdateArticleApi extends BaseRequestApi {
+	constructor({ uuid }) {
+		super(uuid)
+		this.uuid = uuid
+	}
+
+	method() {
+		return "POST"
+	}
+
+	url() {
+		return `/api/permission/article/update/${this.uuid}`
+	}
+}
+
+// 前台
+export class GetClientArticleListApi extends BaseRequestApi {
+	url() {
+		return "/api/auth/article/list"
 	}
 }

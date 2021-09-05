@@ -9,10 +9,11 @@
 				<a-form-item>
 					<a-select
 						v-decorator="['publish',{
-							initialValue: '',
+							initialValue: undefined,
 						}]"
 						:options="publishOptions"
-						style="width: 120px"
+						placeholder="状态..."
+						style="width: 100px"
 					/>
 				</a-form-item>
 
@@ -22,8 +23,30 @@
 							initialValue: undefined,
 						}]"
 						:options="categoryOptions"
-						placeholder="请选择分类..."
+						placeholder="分类..."
 						style="width: 120px"
+					/>
+				</a-form-item>
+
+				<a-form-item>
+					<a-select
+						v-decorator="['is_link',{
+							initialValue: undefined,
+						}]"
+						:options="yesOrNoOptions"
+						placeholder="外链..."
+						style="width: 100px"
+					/>
+				</a-form-item>
+
+				<a-form-item>
+					<a-select
+						v-decorator="['is_original',{
+							initialValue: undefined,
+						}]"
+						:options="yesOrNoOptions"
+						placeholder="原创..."
+						style="width: 100px"
 					/>
 				</a-form-item>
 
@@ -34,6 +57,7 @@
 						}]"
 						allowClear
 						placeholder="关键字..."
+						style="width: 140px"
 					/>
 				</a-form-item>
 
@@ -43,6 +67,13 @@
 					:loading="loading"
 				>
 					搜索
+				</a-button>
+				<a-button
+					v-if="hasSearched"
+					type="link"
+					@click="resetHandleSearch"
+				>
+					重置
 				</a-button>
 			</a-form>
 
@@ -87,6 +118,38 @@
 				>
 					{{ text.map((t) => t.title).join(",") }}
 				</template>
+				<template
+					slot="is_top"
+					slot-scope="text"
+				>
+					<span
+						v-if="text"
+						class="theme-success"
+					>已置顶</span>
+					<span
+						v-else
+					>无</span>
+				</template>
+				<template
+					slot="islink"
+					slot-scope="text"
+				>
+					{{ text ? '是' : '否' }}
+				</template>
+
+				<template
+					slot="isoriginal"
+					slot-scope="text"
+				>
+					{{ text ? '是' : '否' }}
+				</template>
+
+				<template
+					slot="view_times"
+					slot-scope="text"
+				>
+					{{ text }}
+				</template>
 
 				<template
 					slot="createTime"
@@ -106,21 +169,53 @@
 					slot="action"
 					slot-scope="text, record"
 				>
-					<a
-						@click="() => openDrawer(DRAWER_TYPE_MAP.VIEW_ARTICLE, record)"
+					<a-popover
+						placement="right"
 					>
-						预览
-					</a>
-					<a
-						@click="() => $router.push({ name: 'articleEdit', params: { articleId: record.uuid } })"
-					>
-						编辑
-					</a>
-					<a
-						@click="() => handleRemoveArticle(record)"
-					>
-						删除
-					</a>
+						<template slot="content">
+							<a
+								v-if="!record.is_link"
+								class="more-action-pop-link"
+								@click="() => openDrawer(DRAWER_TYPE_MAP.VIEW_ARTICLE, record)"
+							>
+								预览
+							</a>
+							<a
+								v-if="record.is_link"
+								:href="record.link_url"
+								target="_blank"
+							>
+								查看
+							</a>
+							<a
+								v-if="!record.is_link"
+								class="more-action-pop-link"
+								@click="() => $router.push({ name: 'articleEdit', params: { articleId: record.uuid } })"
+							>
+								编辑
+							</a>
+							<a
+								class="more-action-pop-link"
+								@click="() => handleToggleTopArticle(record)"
+							>
+								{{ record.is_top ? '取消置顶' : '置顶' }}
+							</a>
+							<a
+								v-if="!record.is_link"
+								class="more-action-pop-link"
+								@click="() => goViewArticleComment(record)"
+							>
+								评论
+							</a>
+							<a
+								class="more-action-pop-link"
+								@click="() => handleRemoveArticle(record)"
+							>
+								删除
+							</a>
+						</template>
+						<a-icon type="more" />
+					</a-popover>
 				</template>
 			</a-table>
 		</div>
@@ -155,6 +250,11 @@ const DRAWER_TYPE_MAP = {
 	VIEW_ARTICLE: 'view_article',
 }
 
+const yesOrNoOptions = [
+	{ label: '否', value: "0", key: 0 },
+	{ label: '是', value: "1", key: 1 },
+]
+
 const publishOptions = [
 	{
 		label: "全部",
@@ -178,17 +278,7 @@ function getColumns() {
 		{
 			title: "标题",
 			dataIndex: "title",
-			width: "12%"
-		},
-		{
-			title: "简介",
-			dataIndex: "intro",
-			width: "12%"
-		},
-		{
-			title: "关键字",
-			dataIndex: "keyword",
-			width: "10%"
+			width: "14%"
 		},
 		{
 			title: "分类",
@@ -198,18 +288,37 @@ function getColumns() {
 		{
 			title: "标签",
 			dataIndex: "tags",
-			width: "12%",
+			width: "16%",
 			scopedSlots: { customRender: "tags" },
 		},
 		{
 			title: "已发布",
 			dataIndex: "publish",
-			width: "8%",
+			width: "7%",
 			scopedSlots: { customRender: "publish" },
 		},
 		{
-			title: "作者",
-			dataIndex: "username",
+			title: "置顶",
+			dataIndex: "is_top",
+			width: "7%",
+			scopedSlots: { customRender: "is_top" },
+		},
+		{
+			title: "外链",
+			dataIndex: "is_link",
+			scopedSlots: { customRender: "islink" },
+			width: "7%"
+		},
+		{
+			title: "原创",
+			dataIndex: "is_original",
+			scopedSlots: { customRender: "isoriginal" },
+			width: "7%"
+		},
+		{
+			title: "阅读量",
+			dataIndex: "view_times",
+			scopedSlots: { customRender: "view_times" },
 			width: "8%"
 		},
 		{
@@ -255,6 +364,7 @@ export default {
 			articleContent: '',
 			drawerVisible: false,
 			drawerType: null,
+			hasSearched: false,
 		}
 	},
 
@@ -282,6 +392,16 @@ export default {
 					value: cate.id,
 					label: cate.title,
 				})),
+			]
+		},
+		yesOrNoOptions() {
+			return [
+				{
+					label: '全部',
+					value: '',
+					key: 'all',
+				},
+				...yesOrNoOptions,
 			]
 		},
 		pagination() {
@@ -322,30 +442,20 @@ export default {
 		...mapActions({
 			fetchArticleList: "article/fetchArticleList",
 			removeArticle: "article/removeArticle",
+			toggleTopArticle: "article/toggleTopArticle",
 			fetchCategoryList: "article/category/fetchCategoryList",
 		}),
 		DateFormat,
-		handleRemoveArticle({ uuid, title }) {
-			const self = this
-			this.$confirm({
-				title: `您确定要删除 《${title}》 此文章吗？`,
-				okType: "danger",
-				onOk() {
-					const loading = self.$message.loading("请稍后...", -1)
-					self.removeArticle({ uuid })
-						.then((res) => {
-							loading()
-							self.$message.success("删除成功!")
-							const page = getAfterActionPage(self.total, self.limit, self.page)
-							self.fetchArticleList({ page })
-						})
-				}
-			})
+		async resetHandleSearch() {
+			this.form.resetFields()
+			await this.handleSubmit()
+			this.hasSearched = false
 		},
 		handleSubmit(e) {
-			e.preventDefault()
+			e ? e.preventDefault() : null
 			this.form.validateFields((err, values) => {
 				if (!err) {
+					this.hasSearched = true
 					this.fetchArticleList({
 						page: 1,
 						filter: {
@@ -371,6 +481,54 @@ export default {
 			} finally {
 				loading()
 			}
+		},
+		handleToggleTopArticle({ uuid, is_top, title }) {
+			const self = this
+			this.$confirm({
+				title: `您确定要${is_top ? '取消置顶' : '置顶'} 《${title}》吗？`,
+				okType: "danger",
+				onOk() {
+					const loading = self.$message.loading("请稍后...", -1)
+					const formData = {
+						uuid,
+						params: {
+							top: is_top ? 0 : 1,
+						},
+					}
+					self.toggleTopArticle(formData)
+						.then(() => {
+							loading()
+							self.$message.success("操作成功!")
+							self.fetchArticleList()
+						})
+						.finally(loading)
+				}
+			})
+		},
+		handleRemoveArticle({ uuid, title }) {
+			const self = this
+			this.$confirm({
+				title: `您确定要删除 《${title}》 此文章吗？`,
+				okType: "danger",
+				onOk() {
+					const loading = self.$message.loading("请稍后...", -1)
+					self.removeArticle({ uuid })
+						.then((res) => {
+							loading()
+							self.$message.success("删除成功!")
+							const page = getAfterActionPage(self.total, self.limit, self.page)
+							self.fetchArticleList({ page })
+						})
+				}
+			})
+		},
+		goViewArticleComment({ uuid }) {
+			this.$router.push({
+				name: "articleComment",
+				params: {
+					articleId: uuid,
+				},
+			})
 		},
 		handleSubmitDrawer(drawerType) {
 			console.log(drawerType)

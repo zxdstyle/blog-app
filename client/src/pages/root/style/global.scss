@@ -1,0 +1,15 @@
+@import "@/style/lib/_mixin";
+@import "@/style/lib/_variable";
+@import "@/style/lib/_function";
+
+html, body {
+	background-color: #f4f5f5;
+	word-break: break-all;
+}
+
+//文章列表区域
+.article-list {
+	background: #fff;
+	padding: rem(10) rem(15);
+	border-radius: rem(5);
+}

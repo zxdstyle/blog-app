@@ -13,8 +13,9 @@ const router = new koaRouter({ prefix: "/api/auth/article" })
 const articleControl = require("../../../controller/auth/article")
 
 router
-	.get("/list", articleControl.getArticleList)
-	.get("/detail/:uuid", articleControl.getArticleDetail)
+	.get("/list", articleControl.getClientArticleList)
+	.get("/comments/:uuid", articleControl.getArticleComments)
+	.post("/comments/reply/:uuid", articleControl.replyComment)
 
 
 module.exports = router

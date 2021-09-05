@@ -28,6 +28,8 @@ export default {
 @import "@/style/lib/_variable";
 @import "@/style/lib/_function";
 .content-view {
-
+	width: 100%;
+	max-width: 960px;
+	margin: 0 auto;
 }
 </style>
